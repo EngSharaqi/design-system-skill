@@ -15,6 +15,10 @@ it writes the **approved reference** that all later design work follows.
  └──────────────────────────────┘                       └───────────────────────────┘
 ```
 
+**Live demo:** [engsharaqi.github.io/design-system-skill/assets/template.html](https://engsharaqi.github.io/design-system-skill/assets/template.html).
+This is the neutral template the skill starts from, with demo palette and placeholder content. Use
+the switcher in the header to flip between A, B and C.
+
 > نسخة عربية مختصرة في [آخر الصفحة](#بالعربي).
 
 ---
@@ -187,8 +191,11 @@ All output goes into the design-system folder.
 SKILL.md                     # the workflow Claude follows
 references/page-contract.md  # anatomy and rules of the options page
 references/approval.md       # phase 2: resolving a mix, final.html, tokens.css, DESIGN.md
-assets/template.html         # neutral starting page (demo palette, FILL markers)
+assets/template.html         # neutral starting page (demo palette, FILL markers) · live demo below
+index.html, .nojekyll        # GitHub Pages: redirect to the demo
 ```
+
+Live demo of the template: <https://engsharaqi.github.io/design-system-skill/assets/template.html>
 
 `assets/template.html` uses an obviously fake demo palette and placeholder copy. The skill must
 replace every demo value and `<!-- FILL -->` marker, and it checks that none survive, so nothing
@@ -222,6 +229,8 @@ from the template's look leaks into your project.
 ```bash
 git clone https://github.com/EngSharaqi/design-system-skill.git ~/.claude/skills/design-system-options
 ```
+
+**شكل الصفحة:** [عرض مباشر للـ template](https://engsharaqi.github.io/design-system-skill/assets/template.html)
 
 **الاستخدام:** افتح Claude Code في المشروع واكتب «اعملي ديزاين سيستم للبروجيكت» أو
 `/design-system-options`. وللاعتماد بعدين: `/design-system-options approve ب`.
