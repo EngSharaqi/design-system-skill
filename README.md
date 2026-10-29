@@ -1,8 +1,47 @@
+<div align="center">
+
 # design-system-options
 
-A [Claude Code](https://claude.com/claude-code) skill. It reads your project and proposes a design
-system **as three directions you can switch between on one page**. Once you pick one (or a mix),
-it writes the **approved reference** that all later design work follows.
+**A design system you choose from three options, built from your own codebase.**
+
+A [Claude Code](https://claude.com/claude-code) skill. It reads your project, proposes three
+design-system directions on one switchable page, and turns your choice into the approved reference
+that all later design work follows.
+
+[![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-D97757?style=flat-square)](https://claude.com/claude-code)
+[![Release](https://img.shields.io/github/v/release/EngSharaqi/design-system-skill?style=flat-square&color=4F46E5)](https://github.com/EngSharaqi/design-system-skill/releases)
+[![Live demo](https://img.shields.io/badge/demo-live-0EA5E9?style=flat-square)](https://engsharaqi.github.io/design-system-skill/assets/template.html)
+![Output](https://img.shields.io/badge/output-single%20HTML%20file-312E81?style=flat-square)
+![RTL ready](https://img.shields.io/badge/RTL-ready-16A34A?style=flat-square)
+![WCAG](https://img.shields.io/badge/contrast-computed%2C%20WCAG%20AA-64748B?style=flat-square)
+
+<br>
+
+<a href="https://engsharaqi.github.io/design-system-skill/assets/template.html"><img src="https://img.shields.io/badge/%E2%96%B6%20%20Open%20the%20live%20demo-4F46E5?style=for-the-badge" alt="Open the live demo" height="44"></a>
+&nbsp;
+<a href="#install"><img src="https://img.shields.io/badge/Install%20in%2030%20seconds-1F2430?style=for-the-badge" alt="Install" height="44"></a>
+
+<br><br>
+
+<a href="https://engsharaqi.github.io/design-system-skill/assets/template.html"><img src="docs/hero.png" alt="The options page: three design-system directions, A · Calm, B · Institutional and C · Brand-forward, side by side" width="900"></a>
+
+<sub>The live demo is the neutral template the skill starts from. In your project, every colour,
+label and screen comes from your own code.</sub>
+
+</div>
+
+---
+
+## One screen, three directions
+
+The same dashboard in each option. The switcher in the header redraws the whole page.
+
+| A · Calm | B · Institutional | C · Brand-forward |
+|:---:|:---:|:---:|
+| <img src="docs/screen-a.png" alt="Sample screen in option A" width="280"> | <img src="docs/screen-b.png" alt="Sample screen in option B" width="280"> | <img src="docs/screen-c.png" alt="Sample screen in option C" width="280"> |
+| Evolution of your current UI. Lowest migration cost. | Hairlines, tight radii, standard-aligned. | Brand colour in the shell and primary action. |
+
+## How it works
 
 ```
 "make a design system for this project"
@@ -15,11 +54,9 @@ it writes the **approved reference** that all later design work follows.
  └──────────────────────────────┘                       └───────────────────────────┘
 ```
 
-**Live demo:** [engsharaqi.github.io/design-system-skill/assets/template.html](https://engsharaqi.github.io/design-system-skill/assets/template.html).
-This is the neutral template the skill starts from, with demo palette and placeholder content. Use
-the switcher in the header to flip between A, B and C.
-
-> نسخة عربية مختصرة في [آخر الصفحة](#بالعربي).
+**Contents:** [Why](#why) · [What you get](#what-you-get) · [Install](#install) · [Usage](#usage) ·
+[What it reads](#what-it-reads-and-what-it-never-does) · [Quality bar](#built-in-quality-bar) ·
+[Customising](#customising) · [Contributing](#contributing) · [بالعربي](#بالعربي)
 
 ---
 
@@ -193,9 +230,9 @@ references/page-contract.md  # anatomy and rules of the options page
 references/approval.md       # phase 2: resolving a mix, final.html, tokens.css, DESIGN.md
 assets/template.html         # neutral starting page (demo palette, FILL markers) · live demo below
 index.html, .nojekyll        # GitHub Pages: redirect to the demo
+docs/                        # README screenshots
+CHANGELOG.md · CONTRIBUTING.md · .github/CODEOWNERS
 ```
-
-Live demo of the template: <https://engsharaqi.github.io/design-system-skill/assets/template.html>
 
 `assets/template.html` uses an obviously fake demo palette and placeholder copy. The skill must
 replace every demo value and `<!-- FILL -->` marker, and it checks that none survive, so nothing
@@ -209,6 +246,12 @@ from the template's look leaks into your project.
   `references/page-contract.md`.
 - **Different output folder:** state it in your `CLAUDE.md`. The skill honours it before its
   default.
+
+## Contributing
+
+Issues and pull requests are welcome. `main` is protected: every change goes through a pull
+request and merges only after the maintainer's review. See [CONTRIBUTING.md](CONTRIBUTING.md), and
+see [CHANGELOG.md](CHANGELOG.md) for what changed in each release.
 
 ---
 
