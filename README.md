@@ -1,6 +1,6 @@
 <div align="center">
 
-# design-system-options
+# Design System Skill
 
 **A design system you choose from three options, built from your own codebase.**
 
