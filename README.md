@@ -9,7 +9,6 @@ design-system directions on one switchable page, and turns your choice into the 
 that all later design work follows.
 
 [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-D97757?style=flat-square)](https://claude.com/claude-code)
-[![Release](https://img.shields.io/github/v/release/EngSharaqi/design-system-skill?style=flat-square&color=4F46E5)](https://github.com/EngSharaqi/design-system-skill/releases)
 [![Live demo](https://img.shields.io/badge/demo-live-0EA5E9?style=flat-square)](https://engsharaqi.github.io/design-system-skill/assets/template.html)
 ![Output](https://img.shields.io/badge/output-single%20HTML%20file-312E81?style=flat-square)
 ![RTL ready](https://img.shields.io/badge/RTL-ready-16A34A?style=flat-square)
