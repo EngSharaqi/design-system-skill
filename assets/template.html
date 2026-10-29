@@ -1,0 +1,1612 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-opt="a" data-font="primary">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Design system options</title>
+<!-- FILL: the <title> above and the header text below: "<product name> design system options". -->
+<!--
+FILL: THESIS — one or two sentences: which product and which surfaces (roles, modules) this system covers, what it is
+derived from (the existing UI and the brand guide), and that the three options share foundations (palette, type scale,
+spacing, sizes) and differ only in shape, depth and where the brand colour sits.
+FILL: SOURCES — where each foundation comes from, with evidence: type scale (a standard, or existing CSS file:line),
+spacing and component heights (a published token set + version), colours (brand guide page, or existing tokens file:line).
+Say which values were measured and which still need confirmation.
+
+THESIS (demo): one design system for a generic workspace app, in three options that share foundations and differ in shape,
+depth and use of colour.
+SOURCES (demo): 16px body with a 40/32/28/24/20 heading scale; 4px spacing; 32/40/48 control heights growing to 40/48/56 on
+touch screens; a neutral demo palette. None of it comes from a real project.
+-->
+<!-- Demo fonts: Inter and IBM Plex Sans stand in for the project's fonts. Replace the link and --font-primary / --font-alt
+     with the project's own families (self-hosted @font-face if that is how the project ships them). Keep the Arabic fallback
+     if the product is bilingual. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ═══ 1. Brand + shared foundations (identical in every option) ═══ */
+/* DEMO VALUES — replace from the project's brand guide / existing UI.
+   Steps 80/60/40/20/8 are mixes of the base colour with white. "-strong" is the hover step (base mixed with black).
+   Every contrast ratio quoted in this file was calculated (WCAG 2.x relative luminance), not estimated:
+   recalculate them all when the values change. */
+:root {
+  color-scheme: light;
+  /* Brand — primary */
+  --brand-dark: #1f2430;    --brand-dark-80: #4c5059;    --brand-dark-60: #797c83;    --brand-dark-40: #a5a7ac;    --brand-dark-20: #d2d3d6;    --brand-dark-8: #ededee;
+  --brand-deep: #312e81;    --brand-deep-80: #5a589a;    --brand-deep-60: #8382b3;    --brand-deep-40: #adabcd;    --brand-deep-20: #d6d5e6;    --brand-deep-8: #efeef5;
+  --brand-accent: #0ea5e9;  --brand-accent-80: #3eb7ed;  --brand-accent-60: #6ec9f2;  --brand-accent-40: #9fdbf6;  --brand-accent-20: #cfedfb;  --brand-accent-8: #ecf8fd;
+  --brand-primary: #4f46e5; --brand-primary-80: #726bea; --brand-primary-60: #9590ef; --brand-primary-40: #b9b5f5; --brand-primary-20: #dcdafa; --brand-primary-8: #f1f0fd;
+  --brand-muted: #64748b;   --brand-muted-80: #8390a2;   --brand-muted-60: #a2acb9;   --brand-muted-40: #c1c7d1;   --brand-muted-20: #e0e3e8;   --brand-muted-8: #f3f4f6;
+  /* Brand — secondary */
+  --alt-1: #16a34a; --alt-1-80: #45b56e; --alt-1-60: #73c892; --alt-1-40: #a2dab7; --alt-1-20: #d0eddb;
+  --alt-2: #0891b2; --alt-2-80: #39a7c1; --alt-2-60: #6bbdd1; --alt-2-40: #9cd3e0; --alt-2-20: #cee9f0;
+  --alt-3: #f59e0b; --alt-3-80: #f7b13c; --alt-3-60: #f9c56d; --alt-3-40: #fbd89d; --alt-3-20: #fdecce;
+  --alt-4: #a8a29e; --alt-4-80: #b9b5b1; --alt-4-60: #cbc7c5; --alt-4-40: #dcdad8; --alt-4-20: #eeecec;
+  --alt-4-wash: #f8f8f7; --alt-4-ink: #6e6a67; /* 5.04:1 on its wash */
+  --gray-a: #bdbab9; --gray-b: #aaa8aa; --gray-c: #8a898c;
+  /* Derived, contrast-checked: hover steps and text-safe inks */
+  --brand-primary-strong: #443cc5; /* white text 7.78:1 */
+  --brand-dark-strong: #1b1f29;
+  --brand-accent-strong: #0d94d2;  /* brand-dark text 4.57:1 */
+  --accent-ink: #0a7caf;           /* 4.65:1 on white — brand-accent itself is 2.77:1, not usable as text */
+  --focus-accent: #0d96d4;         /* 3.32:1 on white — passes 3:1 for a focus ring */
+
+  /* Neutrals — one cool family */
+  --n0: #ffffff; --n25: #fafbfc; --n50: #f5f5f7; --n75: #f2f4f7; --n100: #eef0f3; --n200: #e4e7ec;
+  --n300: #d0d5dd; --n350: #868fa0; --n400: #98a2b3; --n500: #5d677b; --n600: #475467; --n700: #344054;
+
+  /* Status: wash · ink (≥ 4.5:1 on its wash) · dot. Dots come from the secondary palette where it has the hue. */
+  --ok-bg: #ecf8f1;   --ok: #107937;   --ok-dot: var(--alt-1);   /* 5.05:1 */
+  --warn-bg: #fef7eb; --warn: #946007; --warn-dot: var(--alt-3);  /* 5.01:1 */
+  --info-bg: #ebf6f9; --info: #06728c; --info-dot: var(--alt-2);  /* 5.03:1 */
+  --err-bg: #fef3f2;  --err: #b42318;  --err-dot: #f04438;        /* 6.05:1 · white on --err 6.57:1 */
+  --err-strong: #912018;                                          /* white text 8.66:1 */
+  --mute-bg: #f2f4f7; --mute: #475467; --mute-dot: var(--n400);   /* 6.98:1 */
+
+  /* Type — demo scale anchored at a 16px body */
+  --font-primary: "Inter", "Noto Sans Arabic", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-alt: "IBM Plex Sans", "Noto Sans Arabic", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fs-d: 40px;  --lh-d: 52px;   /* display · 2.5rem */
+  --fs-h2: 32px; --lh-h2: 44px;  /* h2 · 2rem */
+  --fs-h3: 28px; --lh-h3: 40px;  /* h3 · 1.75rem */
+  --fs-h4: 24px; --lh-h4: 36px;  /* h4 · 1.5rem */
+  --fs-h5: 20px; --lh-h5: 32px;  /* h5 · 1.25rem */
+  --fs-lg: 18px; --lh-lg: 30px;
+  --fs-md: 16px; --lh-md: 26px;  /* body · 1rem */
+  --fs-sm: 14px; --lh-sm: 22px;  /* sm · .875rem */
+  --fs-xs: 13px; --lh-xs: 20px;  /* the floor: nothing smaller carries words (Arabic needs it most) */
+
+  /* Space — 4px base */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px; --s6: 24px; --s8: 32px; --s10: 40px; --s12: 48px; --s16: 64px; --s20: 80px;
+
+  /* Component heights — S / M / L */
+  --h-s: 32px; --h-m: 40px; --h-l: 48px;
+  --icon-s: 16px; --icon-m: 20px; --icon-l: 24px;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --dur: .2s;
+}
+/* Mobile scale: controls grow on touch (32→40 · 40→48 · 48→56), headings step down,
+   body stays 16 so iOS never zooms a focused field. */
+@media (max-width: 767.98px) {
+  :root {
+    --fs-d: 32px; --lh-d: 44px; --fs-h2: 28px; --lh-h2: 40px; --fs-h3: 24px; --lh-h3: 36px;
+    --fs-h4: 22px; --lh-h4: 32px; --fs-h5: 18px; --lh-h5: 28px;
+    --h-s: 40px; --h-m: 48px; --h-l: 56px;
+  }
+}
+
+/* ═══ 2. Option tokens ═══ */
+/* A · Calm — light grey ground, borderless white cards on soft shadows */
+[data-opt="a"] {
+  --ground: var(--n50); --band: var(--n75); --surface: #fff; --sunken: var(--n75);
+  --ink: var(--brand-dark); --ink-2: var(--brand-muted); --ink-3: var(--n500);
+  --line: var(--n200); --line-input: var(--n350);
+  --primary: var(--brand-primary); --primary-hover: var(--brand-primary-strong); --on-primary: #fff;
+  --accent: var(--brand-accent); --accent-wash: var(--brand-accent-8); --select-wash: var(--brand-primary-8); --select-ink: var(--brand-primary);
+  --btn2-bg: var(--brand-primary-8); --btn2-ink: var(--brand-primary); --btn2-border: transparent; --btn2-hover: var(--brand-primary-20);
+  --link: var(--brand-primary); --focus: var(--focus-accent);
+  --r-card: 20px; --r-inner: 14px; --r-ctl: 12px; --r-btn: 12px; --r-chip: 999px;
+  --card-border: 0 solid transparent;
+  --sh-1: 0 1px 2px rgba(31,36,48,.04), 0 12px 32px -18px rgba(31,36,48,.16);
+  --sh-2: 0 2px 4px rgba(31,36,48,.05), 0 18px 40px -20px rgba(31,36,48,.24);
+  --sh-pop: 0 4px 8px rgba(31,36,48,.06), 0 24px 48px -16px rgba(31,36,48,.28);
+  --card-pad: 24px;
+  --bar-bg: rgba(255,255,255,.82); --bar-ink: var(--brand-dark); --bar-ink-2: var(--n500); --bar-line: rgba(31,36,48,.06); --bar-active: var(--brand-primary-8); --bar-active-ink: var(--brand-primary);
+  --field-bg: #fff;
+  --tab-style: segment;
+}
+/* B · Institutional — white ground, hairlines instead of shadows, 8px corners, pill buttons */
+[data-opt="b"] {
+  --ground: #fff; --band: var(--n25); --surface: #fff; --sunken: var(--n75);
+  --ink: var(--brand-dark); --ink-2: var(--brand-muted); --ink-3: var(--n500);
+  --line: var(--n300); --line-input: var(--brand-dark-60);
+  --primary: var(--brand-deep); --primary-hover: var(--brand-dark); --on-primary: #fff;
+  --accent: var(--brand-accent); --accent-wash: var(--brand-accent-8); --select-wash: var(--brand-deep-8); --select-ink: var(--brand-deep);
+  --btn2-bg: #fff; --btn2-ink: var(--brand-deep); --btn2-border: var(--brand-deep); --btn2-hover: var(--brand-deep-8);
+  --link: var(--brand-primary); --focus: var(--brand-deep);
+  --r-card: 8px; --r-inner: 6px; --r-ctl: 8px; --r-btn: 999px; --r-chip: 999px;
+  --card-border: 1px solid var(--n300);
+  --sh-1: none; --sh-2: 0 1px 2px rgba(31,36,48,.06);
+  --sh-pop: 0 2px 4px rgba(31,36,48,.06), 0 16px 32px -12px rgba(31,36,48,.22);
+  --card-pad: 20px;
+  --bar-bg: var(--brand-deep); --bar-ink: #fff; --bar-ink-2: var(--brand-deep-20); --bar-line: transparent; --bar-active: rgba(255,255,255,.12); --bar-active-ink: #fff;
+  --field-bg: #fff;
+}
+/* C · Brand-forward — dark shell, accent action, the secondary palette for categories */
+[data-opt="c"] {
+  --ground: var(--brand-deep-8); --band: var(--brand-dark-8); --surface: #fff; --sunken: var(--brand-deep-8);
+  --ink: var(--brand-dark); --ink-2: var(--brand-muted); --ink-3: var(--n500);
+  --line: var(--brand-deep-20); --line-input: var(--n350);
+  --primary: var(--brand-accent); --primary-hover: var(--brand-accent-strong); --on-primary: var(--brand-dark);
+  --accent: var(--brand-accent); --accent-wash: var(--brand-accent-20); --select-wash: var(--brand-accent-20); --select-ink: var(--brand-dark);
+  --btn2-bg: transparent; --btn2-ink: var(--brand-dark); --btn2-border: var(--brand-dark-40); --btn2-hover: var(--brand-dark-8);
+  --link: var(--brand-primary); --focus: var(--focus-accent);
+  --r-card: 16px; --r-inner: 10px; --r-ctl: 10px; --r-btn: 10px; --r-chip: 8px;
+  --card-border: 1px solid rgba(31,36,48,.07);
+  --sh-1: 0 1px 2px rgba(31,36,48,.05), 0 6px 16px -10px rgba(31,36,48,.18);
+  --sh-2: 0 2px 4px rgba(31,36,48,.06), 0 14px 28px -14px rgba(31,36,48,.26);
+  --sh-pop: 0 4px 8px rgba(31,36,48,.08), 0 24px 48px -16px rgba(31,36,48,.32);
+  --card-pad: 24px;
+  --bar-bg: var(--brand-dark); --bar-ink: #fff; --bar-ink-2: var(--brand-dark-40); --bar-line: transparent; --bar-active: color-mix(in srgb, var(--brand-accent) 16%, transparent); --bar-active-ink: var(--brand-accent-40);
+  --field-bg: #fff;
+}
+
+/* ═══ 3. Page shell ═══ */
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--ground); color: var(--ink);
+  font-family: var(--font-primary); font-size: var(--fs-md); line-height: var(--lh-md);
+  caret-color: var(--focus-accent); transition: background-color .3s var(--ease);
+}
+[data-font="alt"] body { font-family: var(--font-alt); }
+::selection { background: var(--brand-accent-20); color: var(--brand-dark); }
+* { scrollbar-width: thin; scrollbar-color: var(--n300) transparent; }
+a { color: var(--link); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.num, table, .tnum { font-variant-numeric: tabular-nums; }
+svg.i { width: var(--icon-m); height: var(--icon-m); flex: none; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.i--s { width: var(--icon-s) !important; height: var(--icon-s) !important; }
+.i--l { width: var(--icon-l) !important; height: var(--icon-l) !important; }
+/* Icons are drawn for left-to-right; directional ones carry .flip and mirror in RTL. */
+[dir="rtl"] .flip { transform: scaleX(-1); }
+.sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+svg.mark { width: 28px; height: 28px; flex: none; fill: currentColor; }
+
+/* Doc chrome */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30;
+  background: color-mix(in srgb, var(--ground) 88%, transparent); backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.top__in { max-width: 1360px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.top__title { font-weight: 700; font-size: var(--fs-md); margin: 0; margin-inline-end: auto; display: flex; align-items: center; gap: 10px; }
+.top__title svg.mark { color: var(--primary); }
+.pick { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; min-width: 0; max-width: 100%; }
+.pick label { font-size: var(--fs-xs); color: var(--ink-3); }
+.wrap { max-width: 1360px; margin: 0 auto; padding-inline: 24px; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; }
+.toc { position: sticky; top: 84px; align-self: start; padding-block: 40px; font-size: var(--fs-sm); }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.toc a { display: block; padding: 6px 12px; border-radius: 8px; color: var(--ink-2); text-decoration: none; }
+.toc a:hover { background: var(--surface); color: var(--ink); }
+.toc ol ol { padding-inline-start: 12px; }
+.toc ol ol a { font-size: var(--fs-xs); padding-block: 3px; color: var(--ink-3); }
+main { padding-block: 40px 96px; min-width: 0; }
+@media (max-width: 1023.98px) { .wrap { grid-template-columns: minmax(0, 1fr); } .toc { display: none; } }
+@media (max-width: 767.98px) { .top__in, .wrap { padding-inline: 16px; } .top__title span { display: none; } main { padding-top: 24px; } }
+
+.sec { margin-block-end: 80px; scroll-margin-top: 88px; }
+.sec > h2 { font-size: var(--fs-h2); line-height: var(--lh-h2); margin: 0 0 8px; text-wrap: balance; }
+.sec > p.lead { color: var(--ink-2); max-width: 68ch; margin: 0 0 32px; font-size: var(--fs-lg); line-height: var(--lh-lg); }
+.sub { margin-block: 48px 0; scroll-margin-top: 88px; }
+.sub > h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); margin: 0 0 6px; }
+.sub > p { color: var(--ink-2); max-width: 68ch; margin: 0 0 20px; }
+.spec { font-size: var(--fs-xs); line-height: var(--lh-xs); color: var(--ink-3); margin-top: 12px; }
+.spec code, code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .86em; direction: ltr; unicode-bidi: isolate; background: var(--sunken); padding: 1px 6px; border-radius: 6px; color: var(--ink); }
+
+.board {
+  background: var(--surface); border: var(--card-border); border-radius: var(--r-card); box-shadow: var(--sh-1);
+  padding: var(--card-pad);
+}
+.board + .board { margin-top: 16px; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.row + .row { margin-top: 16px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 1199.98px) { .grid3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 767.98px) { .grid2, .grid3 { grid-template-columns: minmax(0, 1fr); } }
+.cap { font-size: var(--fs-xs); color: var(--ink-3); display: block; margin-bottom: 8px; }
+.scroll-x { overflow-x: auto; position: relative; }
+
+/* Option cards in the intro */
+.opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 1099.98px) { .opts { grid-template-columns: minmax(0, 1fr); } }
+.opt {
+  position: relative; inset-block-start: 0; text-align: start; font: inherit; color: inherit; cursor: pointer;
+  background: #fff; border: 2px solid transparent; border-radius: 20px; padding: 0; overflow: hidden;
+  box-shadow: 0 1px 2px rgba(31,36,48,.05), 0 12px 28px -18px rgba(31,36,48,.2);
+  transition: inset-block-start var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.opt:hover { inset-block-start: -2px; }
+.opt[aria-pressed="true"] { border-color: var(--focus-accent); }
+.opt__mini { height: 148px; position: relative; overflow: hidden; }
+.opt__body { padding: 20px 24px 24px; }
+.opt__body h3 { margin: 0 0 6px; font-size: var(--fs-h5); line-height: var(--lh-h5); }
+.opt__body p { margin: 0 0 14px; color: var(--brand-muted); font-size: var(--fs-sm); line-height: var(--lh-sm); }
+.opt__facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: var(--fs-xs); line-height: var(--lh-xs); margin: 0; }
+.opt__facts dt { color: var(--n500); } .opt__facts dd { margin: 0; color: var(--brand-dark); }
+.opt__on { position: absolute; inset-block-start: 12px; inset-inline-end: 12px; background: var(--brand-dark); color: #fff; font-size: 12px; padding: 2px 10px; border-radius: 999px; display: none; }
+.opt[aria-pressed="true"] .opt__on { display: block; }
+/* Thumbnails drawn with each option's own layer-1 tokens, so all three show whatever option is active */
+.mini { position: absolute; inset: 0; display: grid; grid-template-rows: 26px 1fr; }
+.mini__bar { display: flex; align-items: center; gap: 6px; padding-inline: 12px; }
+.mini__bar i { display: block; height: 6px; border-radius: 3px; }
+.mini__body { padding: 14px; display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+.mini__tile { padding: 10px; display: grid; align-content: start; gap: 6px; }
+.mini__tile i { display: block; height: 6px; border-radius: 3px; background: var(--n300); }
+.mini__tile b { display: block; height: 16px; width: 56px; }
+.mini--a { background: var(--n50); } .mini--a .mini__bar { background: rgba(255,255,255,.9); }
+.mini--a .mini__tile { background: #fff; border-radius: 12px; box-shadow: 0 8px 16px -10px rgba(31,36,48,.25); }
+.mini--a .mini__tile b { background: var(--brand-primary); border-radius: 6px; }
+.mini--b { background: #fff; } .mini--b .mini__bar { background: var(--brand-deep); } .mini--b .mini__bar i { background: rgba(255,255,255,.5); }
+.mini--b .mini__tile { border: 1px solid var(--n300); border-radius: 4px; }
+.mini--b .mini__tile b { background: var(--brand-deep); border-radius: 99px; }
+.mini--c { background: var(--brand-deep-8); } .mini--c .mini__bar { background: var(--brand-dark); } .mini--c .mini__bar i { background: rgba(255,255,255,.4); }
+.mini--c .mini__body { background: linear-gradient(var(--brand-dark) 0 34px, transparent 34px); }
+.mini--c .mini__tile { background: #fff; border-radius: 9px; box-shadow: 0 6px 12px -8px rgba(31,36,48,.3); }
+.mini--c .mini__tile b { background: var(--brand-accent); border-radius: 6px; }
+.mini--a .mini__bar i { background: var(--n300); }
+
+/* Compare table + source table */
+.tbl { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); line-height: var(--lh-sm); }
+.tbl th, .tbl td { text-align: start; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tbl thead th { font-weight: 500; color: var(--ink-3); font-size: var(--fs-xs); background: var(--band); }
+.tbl tbody th { font-weight: 500; color: var(--ink); white-space: nowrap; }
+.tbl tr:last-child td, .tbl tr:last-child th { border-bottom: 0; }
+.tbl .on { background: color-mix(in srgb, var(--accent-wash) 70%, transparent); }
+
+/* ═══ 4. Foundations specimens ═══ */
+.ramp { display: grid; grid-template-columns: 132px repeat(6, minmax(0, 1fr)); gap: 6px; align-items: stretch; }
+.ramp + .ramp { margin-top: 10px; }
+.ramp__name { font-size: var(--fs-sm); line-height: 1.35; align-self: center; }
+.ramp__name small { display: block; color: var(--ink-3); font-size: 12px; text-align: start; font-family: ui-monospace, Menlo, monospace; }
+.sw { border-radius: 10px; min-height: 64px; padding: 8px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 11.5px; line-height: 1.3; font-family: ui-monospace, Menlo, monospace; direction: ltr; }
+.sw span { opacity: .85; }
+@media (max-width: 767.98px) { .ramp { grid-template-columns: repeat(6, minmax(0, 1fr)); } .ramp__name { grid-column: 1 / -1; } .sw { min-height: 48px; font-size: 10px; padding: 6px; } }
+.status-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 767.98px) { .status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.st { border-radius: var(--r-inner); padding: 14px; font-size: var(--fs-sm); line-height: var(--lh-sm); }
+.st b { display: flex; align-items: center; gap: 8px; } .st b::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--d); }
+.st small { display: block; font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; text-align: start; opacity: .85; margin-top: 6px; }
+
+.type-row { display: grid; grid-template-columns: 120px minmax(0, 1fr) 150px; gap: 20px; align-items: baseline; padding-block: 14px; border-bottom: 1px solid var(--line); }
+.type-row:last-child { border-bottom: 0; }
+.type-row .t-meta { font-size: var(--fs-xs); color: var(--ink-3); line-height: 1.4; }
+.type-row .t-meta b { display: block; color: var(--ink); font-weight: 500; font-size: var(--fs-sm); }
+.type-row .t-px { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--ink-3); text-align: end; }
+.type-row .t-sample { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 767.98px) { .type-row { grid-template-columns: minmax(0, 1fr); gap: 4px; } .type-row .t-px { text-align: start; } }
+
+.space-row { display: grid; grid-template-columns: 64px 64px minmax(0, 1fr); gap: 16px; align-items: center; font-size: var(--fs-xs); padding-block: 5px; }
+.space-row .bar { height: 12px; background: var(--brand-accent-40); border-radius: 3px; }
+.space-row code { justify-self: start; }
+
+.bp { display: grid; gap: 8px; }
+.bp__row { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 16px; align-items: center; font-size: var(--fs-sm); }
+.bp__track { height: 34px; background: var(--sunken); border-radius: 8px; position: relative; overflow: hidden; }
+.bp__fill { position: absolute; inset-block: 0; inset-inline-start: 0; background: var(--brand-primary-20); border-radius: 8px; display: flex; align-items: center; padding-inline: 10px; font-size: 12px; color: var(--brand-dark); white-space: nowrap; }
+.bp__row.is-now .bp__fill { background: var(--brand-accent-40); }
+
+.shape-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 767.98px) { .shape-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.shape { aspect-ratio: 4/3; background: var(--surface); border: var(--card-border); display: grid; place-items: center; text-align: center; font-size: var(--fs-xs); color: var(--ink-3); padding: 8px; }
+.shape b { display: block; font-size: var(--fs-sm); color: var(--ink); font-weight: 500; }
+
+.icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+.icons figure { margin: 0; padding: 14px 6px 10px; border-radius: var(--r-inner); background: var(--band); display: grid; justify-items: center; gap: 8px; font-size: 12px; color: var(--ink-3); }
+.icons svg.i { width: 24px; height: 24px; color: var(--ink); }
+
+/* ═══ 5. Components ═══ */
+/* Button */
+.btn {
+  --bh: var(--h-m); --bp: 18px; --bf: var(--fs-sm);
+  position: relative; inset-block-start: 0;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: var(--bh); padding-inline: var(--bp); border-radius: var(--r-btn);
+  font: 500 var(--bf)/1 inherit; font-family: inherit; white-space: nowrap; cursor: pointer; text-decoration: none;
+  border: 1.5px solid transparent; background: transparent; color: var(--ink);
+  transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease), inset-block-start .12s var(--ease);
+}
+.btn:active:not(:disabled) { inset-block-start: 1px; }
+.btn--s { --bh: var(--h-s); --bp: 12px; --bf: var(--fs-xs); gap: 6px; }
+.btn--l { --bh: var(--h-l); --bp: 24px; --bf: var(--fs-md); }
+.btn--primary { background: var(--primary); color: var(--on-primary); }
+.btn--primary:hover { background: var(--primary-hover); }
+.btn--secondary { background: var(--btn2-bg); color: var(--btn2-ink); border-color: var(--btn2-border); }
+[data-opt="b"] .btn--secondary { border-width: 2px; } /* B: a 2px outline carries the secondary action */
+.btn--secondary:hover { background: var(--btn2-hover); }
+.btn--ghost { color: var(--link); }
+.btn--ghost:hover { background: var(--select-wash); }
+.btn--danger { background: var(--err); color: #fff; }
+.btn--danger:hover { background: var(--err-strong); }
+.btn--danger-soft { background: var(--err-bg); color: var(--err); }
+.btn--icon { width: var(--bh); padding: 0; }
+.btn:disabled, .btn[aria-disabled="true"] { background: var(--n100); color: var(--n500); border-color: transparent; cursor: not-allowed; }
+.btn.is-loading { color: transparent !important; position: relative; pointer-events: none; }
+.btn.is-loading::after { content: ""; position: absolute; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--on-primary); border-inline-end-color: transparent; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn .badge-n { min-width: 20px; height: 20px; padding-inline: 6px; border-radius: 999px; background: rgba(255,255,255,.2); font-size: 12px; display: inline-grid; place-items: center; }
+.btn-group { display: inline-flex; }
+.btn-group .btn { border-radius: 0; }
+.btn-group .btn:first-child { border-start-start-radius: var(--r-btn); border-end-start-radius: var(--r-btn); }
+.btn-group .btn:last-child { border-start-end-radius: var(--r-btn); border-end-end-radius: var(--r-btn); }
+.btn-group .btn + .btn { margin-inline-start: -1.5px; }
+
+/* Field */
+.field { display: grid; gap: 6px; min-width: 0; }
+.field__label { font-size: var(--fs-sm); line-height: var(--lh-sm); font-weight: 500; color: var(--ink); display: flex; gap: 6px; align-items: baseline; }
+.field__label .req { color: var(--err); }
+.field__label .opt-t { color: var(--ink-3); font-weight: 400; font-size: var(--fs-xs); }
+.field__help { font-size: var(--fs-xs); line-height: var(--lh-xs); color: var(--ink-3); display: flex; gap: 6px; align-items: flex-start; }
+.field__help--err { color: var(--err); }
+.field__help svg.i { width: 16px; height: 16px; margin-top: 2px; }
+.ctl {
+  display: flex; align-items: center; gap: 8px; height: var(--h-m); padding-inline: 14px;
+  background: var(--field-bg); border: 1px solid var(--line-input); border-radius: var(--r-ctl);
+  color: var(--ink); transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+.ctl:hover { border-color: var(--ink-2); }
+.ctl:focus-within { border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent); }
+.ctl > svg.i { color: var(--ink-3); }
+.ctl input, .ctl select, .ctl textarea {
+  flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: transparent; color: inherit;
+  font: inherit; font-size: var(--fs-md); padding: 0;
+}
+.ctl input::placeholder, .ctl textarea::placeholder { color: var(--n500); opacity: 1; }
+.ctl--area { height: auto; align-items: stretch; padding-block: 10px; }
+.ctl--area textarea { resize: vertical; min-height: 96px; line-height: var(--lh-md); }
+.ctl.is-error { border-color: var(--err); }
+.ctl.is-error:focus-within { box-shadow: 0 0 0 3px color-mix(in srgb, var(--err) 16%, transparent); }
+.ctl.is-ok { border-color: var(--ok); }
+.ctl.is-disabled { background: var(--n75); border-color: var(--n200); color: var(--n500); cursor: not-allowed; }
+.ctl.is-readonly { background: var(--band); border-style: dashed; }
+.ctl__affix { color: var(--ink-3); font-size: var(--fs-sm); padding-inline: 10px 0; border-inline-start: 1px solid var(--line); margin-inline-start: 4px; height: 60%; display: flex; align-items: center; white-space: nowrap; }
+.ctl select { appearance: none; cursor: pointer; }
+.ctl--select { position: relative; }
+/* Physical borders on purpose: this is a down-chevron glyph and must not mirror in RTL. */
+.ctl--select::after {
+  content: ""; position: absolute; inset-inline-end: 14px; width: 10px; height: 10px; pointer-events: none; margin-block-start: -6px;
+  border-right: 1.6px solid var(--ink-2); border-bottom: 1.6px solid var(--ink-2); transform: rotate(45deg);
+}
+.ctl--select select { padding-inline-end: 24px; }
+.ctl--s { height: var(--h-s); padding-inline: 10px; } .ctl--s input { font-size: var(--fs-sm); }
+.ctl--l { height: var(--h-l); padding-inline: 16px; }
+/* A: fields sit sunken until touched, but keep a 3:1 edge */
+[data-opt="a"] .ctl:not(.is-disabled):not(:focus-within) { background: var(--n25); }
+
+/* Search */
+.search { position: relative; }
+.search .ctl { padding-inline-end: 6px; }
+.search kbd { font: 500 12px/1 ui-monospace, Menlo, monospace; color: var(--ink-3); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 4px 7px; background: var(--surface); }
+.search__clear { width: 28px; height: 28px; border-radius: 50%; border: 0; background: var(--n100); color: var(--ink-2); display: grid; place-items: center; cursor: pointer; }
+.search__panel {
+  margin-top: 6px; background: var(--surface); border-radius: var(--r-inner); box-shadow: var(--sh-pop); border: var(--card-border);
+  padding: 6px; display: grid; gap: 2px;
+}
+.search__group { font-size: 12px; color: var(--ink-3); padding: 8px 10px 4px; }
+.search__item { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: calc(var(--r-inner) - 4px); font-size: var(--fs-sm); color: var(--ink); text-decoration: none; }
+.search__item:hover, .search__item[aria-selected="true"] { background: var(--select-wash); }
+.search__item mark { background: var(--brand-accent-20); color: var(--brand-dark); border-radius: 3px; padding-inline: 1px; }
+.search__item small { margin-inline-start: auto; color: var(--ink-3); font-size: 12px; }
+.search__item .tile-i { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; background: var(--brand-primary-8); color: var(--brand-primary); flex: none; }
+.search--hero .ctl { height: var(--h-l); border-radius: calc(var(--r-ctl) + 4px); }
+[data-opt="b"] .search--hero .ctl { border-radius: 999px; }
+
+/* Choice controls */
+.choice { display: inline-flex; align-items: flex-start; gap: 10px; font-size: var(--fs-md); cursor: pointer; line-height: var(--lh-md); }
+.choice input { appearance: none; margin: 3px 0 0; width: 20px; height: 20px; flex: none; border: 1.5px solid var(--line-input); background: #fff; display: grid; place-items: center; cursor: pointer; transition: all var(--dur) var(--ease); }
+.choice input[type="checkbox"] { border-radius: 6px; }
+[data-opt="b"] .choice input[type="checkbox"] { border-radius: 4px; }
+.choice input[type="radio"] { border-radius: 50%; }
+.choice input:checked { background: var(--primary); border-color: var(--primary); }
+[data-opt="c"] .choice input:checked { background: var(--brand-dark); border-color: var(--brand-dark); }
+/* Physical borders on purpose: a tick is not a directional glyph and must not mirror in RTL. */
+.choice input[type="checkbox"]:checked::after { content: ""; width: 10px; height: 5px; margin-block-start: -2px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg); }
+.choice input[type="checkbox"]:indeterminate { background: var(--primary); border-color: var(--primary); }
+.choice input[type="checkbox"]:indeterminate::after { content: ""; width: 10px; height: 2px; background: #fff; }
+.choice input[type="radio"]:checked { background: #fff; border-width: 6px; }
+[data-opt="c"] .choice input[type="radio"]:checked { background: #fff; border-color: var(--brand-dark); }
+.choice input:disabled { background: var(--n100); border-color: var(--n200); cursor: not-allowed; }
+.choice small { display: block; font-size: var(--fs-xs); color: var(--ink-3); line-height: var(--lh-xs); }
+.choice-card { display: flex; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r-inner); cursor: pointer; flex: 1; min-width: 200px; background: var(--surface); }
+.choice-card:has(input:checked) { border-color: var(--primary); background: var(--select-wash); box-shadow: inset 0 0 0 1px var(--primary); }
+[data-opt="c"] .choice-card:has(input:checked) { border-color: var(--brand-dark); box-shadow: inset 0 0 0 1px var(--brand-dark); }
+.switch { display: inline-flex; align-items: center; gap: 12px; cursor: pointer; font-size: var(--fs-md); }
+.switch input { appearance: none; margin: 0; width: 44px; height: 24px; border-radius: 999px; background: var(--n300); position: relative; cursor: pointer; transition: background-color var(--dur) var(--ease); flex: none; }
+.switch input::after { content: ""; position: absolute; top: 3px; inset-inline-start: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(31,36,48,.3); transition: inset-inline-start var(--dur) var(--ease); }
+.switch input:checked { background: var(--primary); }
+[data-opt="c"] .switch input:checked { background: var(--brand-accent-strong); }
+.switch input:checked::after { inset-inline-start: 23px; }
+
+/* Segmented + tabs */
+.seg { display: inline-flex; max-width: 100%; overflow-x: auto; scrollbar-width: none; padding: 4px; gap: 2px; background: var(--sunken); border-radius: 999px; }
+[data-opt="b"] .seg { border-radius: 8px; background: var(--n100); }
+[data-opt="c"] .seg { border-radius: 10px; background: var(--brand-dark-8); }
+.seg button { flex: none; white-space: nowrap; border: 0; background: transparent; font: inherit; font-size: var(--fs-sm); font-weight: 500; color: var(--ink-2); height: calc(var(--h-m) - 8px); padding-inline: 16px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all var(--dur) var(--ease); }
+[data-opt="b"] .seg button { border-radius: 6px; }
+[data-opt="c"] .seg button { border-radius: 7px; }
+.seg button[aria-selected="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(31,36,48,.1), 0 2px 6px -2px rgba(31,36,48,.12); }
+.seg .n { font-size: 12px; color: var(--ink-3); }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+.tabs button { position: relative; border: 0; background: none; font: inherit; font-size: var(--fs-sm); font-weight: 500; color: var(--ink-3); padding: 12px 14px 14px; cursor: pointer; white-space: nowrap; display: inline-flex; gap: 8px; align-items: center; }
+.tabs button:hover { color: var(--ink); }
+.tabs button[aria-selected="true"] { color: var(--ink); }
+.tabs button[aria-selected="true"]::after { content: ""; position: absolute; inset-inline: 10px; bottom: -1px; height: 3px; border-radius: 3px 3px 0 0; background: var(--primary); }
+[data-opt="c"] .tabs button[aria-selected="true"]::after { background: var(--brand-accent); }
+.tabs .n { font-size: 12px; background: var(--n100); color: var(--ink-2); border-radius: 999px; padding: 0 7px; line-height: 20px; }
+
+/* Chips, badges, tags */
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding-inline: 10px; border-radius: var(--r-chip); font-size: var(--fs-xs); font-weight: 500; white-space: nowrap; background: var(--bg, var(--mute-bg)); color: var(--fg, var(--mute)); }
+.chip--dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--dot, var(--mute-dot)); }
+.chip--ok { --bg: var(--ok-bg); --fg: var(--ok); --dot: var(--ok-dot); }
+.chip--warn { --bg: var(--warn-bg); --fg: var(--warn); --dot: var(--warn-dot); }
+.chip--info { --bg: var(--info-bg); --fg: var(--info); --dot: var(--info-dot); }
+.chip--err { --bg: var(--err-bg); --fg: var(--err); --dot: var(--err-dot); }
+.chip--brand { --bg: var(--brand-primary-8); --fg: var(--brand-primary); --dot: var(--brand-primary); }
+.chip--outline { background: transparent; box-shadow: inset 0 0 0 1px var(--line); color: var(--ink-2); }
+.chip--l { height: 32px; padding-inline: 12px; font-size: var(--fs-sm); }
+.tag { display: inline-flex; align-items: center; gap: 4px; height: 30px; padding-inline: 12px 6px; border-radius: var(--r-chip); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); font-size: var(--fs-sm); color: var(--ink); }
+.tag button { width: 22px; height: 22px; border: 0; border-radius: 50%; background: transparent; color: var(--ink-3); display: grid; place-items: center; cursor: pointer; }
+.tag button:hover { background: var(--n100); color: var(--ink); }
+.filter-chip { height: 34px; padding-inline: 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font: inherit; font-size: var(--fs-sm); color: var(--ink-2); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.filter-chip[aria-pressed="true"] { background: var(--select-wash); border-color: var(--select-ink); color: var(--select-ink); font-weight: 500; }
+.count { min-width: 20px; height: 20px; padding-inline: 6px; border-radius: 999px; background: var(--err); color: #fff; font-size: 12px; font-weight: 700; display: inline-grid; place-items: center; line-height: 1; }
+.cat { --c: var(--brand-primary); --cb: var(--brand-primary-8); display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-xs); font-weight: 500; color: var(--c); background: var(--cb); height: 24px; padding-inline: 8px; border-radius: 6px; }
+.cat--alt-1 { --c: var(--ok); --cb: var(--ok-bg); } .cat--alt-2 { --c: var(--info); --cb: var(--info-bg); } .cat--alt-4 { --c: var(--alt-4-ink); --cb: var(--alt-4-wash); } .cat--alt-3 { --c: var(--warn); --cb: var(--warn-bg); }
+[data-opt="a"] .cat, [data-opt="b"] .cat { --c: var(--ink-2); --cb: var(--sunken); }
+.item__cover .cat { --c: currentColor; --cb: rgba(255,255,255,.72); position: relative; }
+[data-opt="c"] .item__cover .cat { --c: #fff; --cb: rgba(255,255,255,.14); }
+
+/* Avatar */
+.av { --av: 40px; width: var(--av); height: var(--av); border-radius: 50%; display: inline-grid; place-items: center; flex: none; position: relative; font-weight: 500; font-size: calc(var(--av) * .4); line-height: 1; background: var(--brand-primary-8); color: var(--brand-primary); user-select: none; }
+[data-opt="b"] .av { background: var(--brand-deep-8); color: var(--brand-deep); }
+[data-opt="c"] .av { background: var(--brand-accent-20); color: var(--brand-dark); }
+.av--xs { --av: 24px; font-size: 11px; } .av--s { --av: 32px; } .av--l { --av: 56px; } .av--xl { --av: 80px; }
+.av--sq { border-radius: calc(var(--av) * .28); }
+.av img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
+.av.av--g1 { background: var(--ok-bg); color: var(--ok); } .av.av--g2 { background: var(--warn-bg); color: var(--warn); } .av.av--g3 { background: var(--info-bg); color: var(--info); } .av.av--g4 { background: var(--alt-4-wash); color: var(--alt-4-ink); }
+.av__dot { position: absolute; inset-block-end: 0; inset-inline-end: 0; width: 28%; height: 28%; min-width: 8px; min-height: 8px; border-radius: 50%; background: var(--ok-dot); box-shadow: 0 0 0 2px var(--surface); }
+.av__dot--away { background: var(--warn-dot); } .av__dot--off { background: var(--n400); }
+.av-stack { display: inline-flex; }
+.av-stack .av { box-shadow: 0 0 0 2px var(--surface); }
+.av-stack .av + .av { margin-inline-start: -10px; }
+.av-more { background: var(--n100) !important; color: var(--ink-2) !important; font-size: 13px; }
+.who { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.who b { display: block; font-weight: 500; font-size: var(--fs-sm); line-height: var(--lh-sm); }
+.who small { display: block; color: var(--ink-3); font-size: var(--fs-xs); line-height: var(--lh-xs); }
+
+/* Breadcrumb */
+.crumbs ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: var(--fs-sm); line-height: var(--lh-sm); }
+.crumbs li { display: inline-flex; align-items: center; gap: 4px; color: var(--ink-3); }
+.crumbs a { color: var(--ink-3); text-decoration: none; border-radius: 6px; padding: 2px 4px; display: inline-flex; align-items: center; gap: 6px; }
+.crumbs a:hover { color: var(--link); background: var(--select-wash); }
+.crumbs [aria-current] { color: var(--ink); font-weight: 500; padding-inline: 4px; }
+.crumbs .sep { width: 14px; height: 14px; color: var(--n400); }
+.crumbs .more { border: 0; background: var(--n100); width: 28px; height: 22px; border-radius: 6px; color: var(--ink-2); cursor: pointer; font: inherit; line-height: 1; }
+.crumbs--m .hide-m { display: none; }
+@media (min-width: 768px) { .crumbs--m .hide-m { display: inline-flex; } .crumbs--m .show-m { display: none; } }
+
+/* Pagination */
+.pager { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; font-size: var(--fs-sm); color: var(--ink-3); }
+.pager__pages { display: inline-flex; gap: 4px; align-items: center; padding: 4px; background: var(--surface); border-radius: 999px; box-shadow: var(--sh-1); border: var(--card-border); }
+[data-opt="b"] .pager__pages, [data-opt="c"] .pager__pages { border-radius: 10px; }
+.pager__pages a, .pager__pages span { min-width: 36px; height: 36px; padding-inline: 8px; border-radius: 999px; display: inline-grid; place-items: center; text-decoration: none; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+[data-opt="b"] .pager__pages a, [data-opt="c"] .pager__pages a { border-radius: 7px; }
+.pager__pages a:hover { background: var(--select-wash); color: var(--ink); }
+.pager__pages a[aria-current] { background: var(--primary); color: var(--on-primary); font-weight: 500; }
+[data-opt="c"] .pager__pages a[aria-current] { background: var(--brand-dark); color: #fff; }
+.pager__pages .is-off { color: var(--n400); }
+
+/* Card family */
+.card { background: var(--surface); border: var(--card-border); border-radius: var(--r-card); box-shadow: var(--sh-1); overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+a.card, .card--link { position: relative; inset-block-start: 0; text-decoration: none; color: inherit; transition: box-shadow var(--dur) var(--ease), inset-block-start var(--dur) var(--ease); }
+a.card:hover { box-shadow: var(--sh-2); inset-block-start: -2px; }
+[data-opt="b"] a.card:hover { inset-block-start: 0; border-color: var(--brand-deep-60); }
+.card__head { padding: var(--card-pad) var(--card-pad) 0; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.card__head h4 { margin: 0; font-size: var(--fs-h5); line-height: var(--lh-h5); font-weight: 700; flex: 1; min-width: 0; }
+.card__body { padding: 16px var(--card-pad) var(--card-pad); flex: 1; }
+.card__foot { padding: 14px var(--card-pad); border-top: 1px solid var(--line); display: flex; align-items: center; gap: 12px; background: var(--band); }
+[data-opt="a"] .card__foot { background: transparent; border-top-color: var(--n100); }
+.item__cover { height: 112px; position: relative; display: flex; align-items: flex-end; padding: 14px var(--card-pad); background: var(--brand-primary-8); color: var(--brand-primary); }
+.item__cover svg { position: absolute; inset-block-start: 16px; inset-inline-end: 20px; width: 64px; height: 64px; opacity: .9; stroke-width: 1.1; }
+[data-opt="b"] .item__cover { background: var(--brand-deep-8); color: var(--brand-deep); height: 96px; }
+[data-opt="c"] .item__cover { background: var(--brand-dark); color: var(--brand-accent-60); }
+[data-opt="c"] .item__cover--alt-1 { background: color-mix(in srgb, var(--alt-1) 40%, var(--brand-dark)); color: var(--alt-1-40); }
+[data-opt="c"] .item__cover--alt-2 { background: color-mix(in srgb, var(--alt-2) 40%, var(--brand-dark)); color: var(--alt-2-40); }
+.item h3, .item h4 { font-size: var(--fs-lg); line-height: var(--lh-lg); margin: 8px 0 6px; font-weight: 700; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--ink-3); font-size: var(--fs-xs); line-height: var(--lh-xs); }
+.meta span { display: inline-flex; align-items: center; gap: 6px; }
+.meta svg.i { width: 16px; height: 16px; }
+
+.prog { display: grid; gap: 6px; }
+.prog__top { display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--ink-3); }
+.prog__top b { color: var(--ink); font-weight: 500; }
+.prog__track { height: 8px; border-radius: 999px; background: var(--n100); overflow: hidden; }
+[data-opt="b"] .prog__track { height: 6px; }
+.prog__fill { height: 100%; border-radius: inherit; background: var(--brand-accent); width: var(--v); }
+[data-opt="b"] .prog__fill { background: var(--brand-deep); }
+.prog--ok .prog__fill { background: var(--alt-1); }
+
+/* List rows */
+.list { display: grid; }
+.li { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--n100); min-width: 0; }
+.li:last-child { border-bottom: 0; }
+.li__main { flex: 1; min-width: 0; }
+.li__main b { display: block; font-weight: 500; font-size: var(--fs-sm); line-height: var(--lh-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.li__main small { color: var(--ink-3); font-size: var(--fs-xs); line-height: var(--lh-xs); }
+.date-chip { width: 52px; flex: none; text-align: center; border-radius: var(--r-inner); background: var(--select-wash); color: var(--select-ink); padding: 6px 0; line-height: 1.1; }
+.date-chip b { display: block; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.date-chip small { font-size: 12px; }
+[data-opt="c"] .date-chip { background: var(--brand-dark); color: #fff; }
+[data-opt="c"] .date-chip small { color: var(--brand-accent-40); }
+
+/* Table */
+.dt { width: 100%; border-collapse: separate; border-spacing: 0; font-size: var(--fs-sm); line-height: var(--lh-sm); }
+.dt th { text-align: start; font-weight: 500; font-size: var(--fs-xs); color: var(--ink-3); padding: 12px 16px; background: var(--band); white-space: nowrap; }
+[data-opt="a"] .dt th { background: transparent; border-bottom: 1px solid var(--n200); }
+[data-opt="c"] .dt th { background: var(--brand-dark-8); color: var(--brand-dark-80); }
+.dt th button { all: unset; display: inline-flex; gap: 4px; align-items: center; cursor: pointer; }
+.dt th button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+.dt td { padding: 14px 16px; border-bottom: 1px solid var(--n100); vertical-align: middle; }
+.dt tbody tr:hover td { background: var(--n25); }
+.dt tbody tr[aria-selected="true"] td { background: var(--select-wash); }
+.dt tr:last-child td { border-bottom: 0; }
+.dt .num { text-align: end; }
+.dt-wrap { border-radius: var(--r-card); background: var(--surface); box-shadow: var(--sh-1); border: var(--card-border); overflow: hidden; }
+.dt-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 16px; border-bottom: 1px solid var(--n100); }
+.dt-bar .search { flex: 1 1 260px; max-width: 360px; }
+
+/* Alert, toast, tooltip, menu, modal, skeleton, empty */
+.alert { display: flex; gap: 12px; padding: 14px 16px; border-radius: var(--r-inner); background: var(--bg); color: var(--ink); font-size: var(--fs-sm); line-height: var(--lh-sm); align-items: flex-start; }
+.alert > svg.i { color: var(--fg); margin-top: 1px; }
+.alert b { display: block; color: var(--fg); font-weight: 700; margin-bottom: 2px; }
+.alert__x { margin-inline-start: auto; }
+.alert .acts { margin-top: 10px; display: flex; gap: 8px; }
+.alert--info { --bg: var(--info-bg); --fg: var(--info); } .alert--ok { --bg: var(--ok-bg); --fg: var(--ok); }
+.alert--warn { --bg: var(--warn-bg); --fg: var(--warn); } .alert--err { --bg: var(--err-bg); --fg: var(--err); }
+[data-opt="b"] .alert { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 30%, transparent); }
+.toast { display: flex; gap: 12px; align-items: center; padding-block: 12px; padding-inline: 16px 8px; border-radius: var(--r-inner); background: var(--brand-dark); color: #fff; box-shadow: var(--sh-pop); font-size: var(--fs-sm); max-width: 440px; }
+.toast svg.i { color: var(--brand-accent-60); }
+.toast .btn--ghost { color: var(--brand-accent-40); }
+.toast .btn--ghost:hover { background: rgba(255,255,255,.08); }
+.tip-wrap { position: relative; display: inline-block; }
+.tip { position: absolute; bottom: calc(100% + 10px); inset-inline-start: 0; background: var(--brand-dark); color: #fff; font-size: var(--fs-xs); line-height: 1.4; padding: 6px 10px; border-radius: 8px; white-space: nowrap; box-shadow: var(--sh-2); }
+.tip::after { content: ""; position: absolute; top: 100%; inset-inline-start: 14px; border: 5px solid transparent; border-top-color: var(--brand-dark); }
+.menu { background: var(--surface); border-radius: var(--r-inner); box-shadow: var(--sh-pop); border: var(--card-border); padding: 6px; min-width: 220px; display: grid; gap: 1px; }
+.menu a { display: flex; align-items: center; gap: 10px; height: 38px; padding-inline: 10px; border-radius: calc(var(--r-inner) - 4px); color: var(--ink); text-decoration: none; font-size: var(--fs-sm); }
+.menu a svg.i { color: var(--ink-3); width: 18px; height: 18px; }
+.menu a:hover { background: var(--select-wash); }
+.menu a.danger, .menu a.danger svg.i { color: var(--err); }
+.menu hr { border: 0; border-top: 1px solid var(--n100); margin: 4px 6px; }
+.menu kbd { margin-inline-start: auto; font: 12px ui-monospace, Menlo, monospace; color: var(--ink-3); }
+.modal-stage { background: rgba(31,36,48,.42); border-radius: var(--r-card); padding: 40px 16px; display: grid; place-items: center; }
+.modal { width: min(480px, 100%); background: var(--surface); border-radius: var(--r-card); box-shadow: var(--sh-pop); overflow: hidden; }
+.modal__head { display: flex; align-items: flex-start; gap: 12px; padding: 24px 24px 0; }
+.modal__head h4 { margin: 0; font-size: var(--fs-h5); line-height: var(--lh-h5); flex: 1; }
+.modal__body { padding: 8px 24px 24px; color: var(--ink-2); font-size: var(--fs-sm); line-height: var(--lh-sm); }
+.modal__foot { display: flex; gap: 8px; justify-content: flex-end; padding: 16px 24px; background: var(--band); }
+[data-opt="a"] .modal__foot { background: transparent; padding-top: 0; }
+.ico-badge { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; flex: none; background: var(--warn-bg); color: var(--warn); }
+.skel { background: linear-gradient(90deg, var(--n100) 0, var(--n75) 40%, var(--n100) 80%); background-size: 300% 100%; border-radius: 6px; animation: shimmer 1.6s ease-in-out infinite; }
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.empty { text-align: center; padding: 40px 24px; display: grid; justify-items: center; gap: 8px; }
+.empty__art { width: 72px; height: 72px; border-radius: 20px; background: var(--select-wash); color: var(--select-ink); display: grid; place-items: center; margin-bottom: 8px; }
+.empty__art svg.i { width: 32px; height: 32px; stroke-width: 1.4; }
+.empty h4 { margin: 0; font-size: var(--fs-lg); line-height: var(--lh-lg); }
+.empty p { margin: 0 0 12px; color: var(--ink-3); font-size: var(--fs-sm); max-width: 40ch; }
+.stepper { display: flex; gap: 0; list-style: none; padding: 0; margin: 0; counter-reset: s; }
+.stepper li { flex: 1; display: grid; justify-items: center; gap: 8px; text-align: center; font-size: var(--fs-xs); color: var(--ink-3); position: relative; counter-increment: s; }
+.stepper li::before { content: counter(s); width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--n300); font-weight: 500; font-size: var(--fs-sm); color: var(--ink-3); position: relative; z-index: 1; font-variant-numeric: tabular-nums; }
+.stepper li::after { content: ""; position: absolute; top: 16px; inset-inline-start: 50%; width: 100%; height: 2px; background: var(--n200); }
+.stepper li:last-child::after { display: none; }
+.stepper li.done::before { content: "✓"; background: var(--primary); color: var(--on-primary); box-shadow: none; }
+.stepper li.done::after { background: var(--primary); }
+.stepper li.now { color: var(--ink); font-weight: 500; }
+.stepper li.now::before { box-shadow: inset 0 0 0 2px var(--primary); color: var(--ink); }
+[data-opt="c"] .stepper li.done::before { background: var(--brand-dark); color: #fff; } [data-opt="c"] .stepper li.done::after { background: var(--brand-dark); } [data-opt="c"] .stepper li.now::before { box-shadow: inset 0 0 0 2px var(--brand-accent-strong); }
+
+/* App bar */
+.appbar { display: flex; align-items: center; gap: 16px; height: 64px; padding-inline: 20px; background: var(--bar-bg); color: var(--bar-ink); border-bottom: 1px solid var(--bar-line); backdrop-filter: blur(14px) saturate(1.4); }
+.appbar__logo { display: inline-flex; align-items: center; gap: 8px; height: 30px; font-weight: 700; font-size: var(--fs-md); color: var(--bar-ink); white-space: nowrap; flex: none; }
+.appbar nav { display: flex; gap: 4px; margin-inline-start: 12px; }
+.appbar nav a { height: 38px; padding-inline: 14px; display: inline-flex; align-items: center; border-radius: 999px; color: var(--bar-ink-2); text-decoration: none; font-size: var(--fs-sm); font-weight: 500; }
+[data-opt="b"] .appbar nav a, [data-opt="c"] .appbar nav a { border-radius: 8px; }
+.appbar nav a:hover { color: var(--bar-ink); }
+.appbar nav a[aria-current] { background: var(--bar-active); color: var(--bar-active-ink); }
+.appbar__end { margin-inline-start: auto; display: flex; align-items: center; gap: 8px; }
+.appbar .icon-btn { width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; color: var(--bar-ink); display: grid; place-items: center; position: relative; cursor: pointer; }
+.appbar .icon-btn:hover { background: var(--bar-active); }
+.appbar .icon-btn .count { position: absolute; top: 4px; inset-inline-end: 2px; height: 18px; min-width: 18px; font-size: 11px; box-shadow: 0 0 0 2px var(--bar-bg); }
+[data-opt="b"] .appbar .icon-btn .count, [data-opt="c"] .appbar .icon-btn .count { box-shadow: none; }
+@media (max-width: 899.98px) { .appbar nav { display: none; } }
+.bottom-nav { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.bottom-nav a { display: grid; justify-items: center; gap: 4px; padding: 10px 0 8px; font-size: 12px; color: var(--ink-3); text-decoration: none; }
+.bottom-nav a[aria-current] { color: var(--select-ink); font-weight: 500; }
+.bottom-nav a[aria-current] svg { background: var(--select-wash); border-radius: 999px; width: 52px; padding: 2px 14px; height: 28px; box-sizing: border-box; }
+
+/* Sample screen */
+.screen { border-radius: 20px; overflow: hidden; background: var(--ground); box-shadow: 0 0 0 1px var(--line), 0 30px 60px -30px rgba(31,36,48,.35); }
+.screen__in { padding: 0 24px 32px; }
+.phead { padding-block: 28px 20px; display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; justify-content: space-between; }
+.phead h1 { font-size: var(--fs-h3); line-height: var(--lh-h3); margin: 8px 0 0; }
+.phead p { margin: 4px 0 0; color: var(--ink-2); font-size: var(--fs-sm); }
+[data-opt="c"] .screen .phead { background: var(--brand-dark); color: #fff; margin-inline: -24px; padding-inline: 24px; padding-bottom: 64px; }
+[data-opt="c"] .screen .phead p { color: var(--brand-dark-20); }
+[data-opt="c"] .screen .phead .crumbs li, [data-opt="c"] .screen .phead .crumbs a { color: var(--brand-dark-40); }
+[data-opt="c"] .screen .phead .crumbs [aria-current] { color: #fff; }
+[data-opt="c"] .screen .phead .crumbs a:hover { background: rgba(255,255,255,.08); color: #fff; }
+[data-opt="c"] .screen .phead .btn--secondary { color: #fff; border-color: rgba(255,255,255,.35); }
+[data-opt="c"] .screen .phead .btn--secondary:hover { background: rgba(255,255,255,.08); }
+[data-opt="c"] .screen .sgrid { margin-top: -44px; }
+.sgrid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.sgrid__items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+@media (max-width: 1099.98px) { .sgrid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 599.98px) { .sgrid__items { grid-template-columns: minmax(0, 1fr); } .screen__in { padding-inline: 16px; } [data-opt="c"] .screen .phead { margin-inline: -16px; padding-inline: 16px; } }
+.card .tile-h { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.card .tile-h h2, .card .tile-h h3 { margin: 0; font-size: var(--fs-h5); line-height: var(--lh-h5); font-weight: 700; }
+
+/* Phone frame */
+.phone { width: 390px; max-width: 100%; margin-inline: auto; border-radius: 36px; padding: 10px; background: var(--brand-dark); box-shadow: 0 30px 60px -30px rgba(31,36,48,.5); }
+.phone__screen { border-radius: 28px; overflow: hidden; background: var(--ground); height: 760px; display: flex; flex-direction: column; }
+.phone__scroll { flex: 1; overflow-y: auto; padding: 0 16px 20px; }
+.phone .appbar { height: 56px; padding-inline: 16px; }
+.phone .appbar__logo { height: 26px; font-size: var(--fs-sm); }
+.phone .appbar__logo svg.mark { width: 24px; height: 24px; }
+.phone .sgrid { grid-template-columns: minmax(0, 1fr); }
+
+/* Decision list */
+.qs { counter-reset: q; display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; }
+.qs li { counter-increment: q; display: grid; grid-template-columns: 32px 1fr; gap: 14px; background: var(--surface); border: var(--card-border); box-shadow: var(--sh-1); border-radius: var(--r-inner); padding: 16px 18px; }
+.qs li::before { content: counter(q); width: 32px; height: 32px; border-radius: 50%; background: var(--select-wash); color: var(--select-ink); display: grid; place-items: center; font-weight: 700; font-size: var(--fs-sm); }
+.qs b { display: block; margin-bottom: 2px; }
+.qs p { margin: 0; color: var(--ink-2); font-size: var(--fs-sm); line-height: var(--lh-sm); }
+
+.verify { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
+.verify--yes { background: var(--ok-bg); color: var(--ok); }
+.verify--q { background: var(--warn-bg); color: var(--warn); }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- FILL: replace #mark with the product's logo mark (single-colour, drawn with currentColor). -->
+    <symbol id="mark" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M8 2h8a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V8a6 6 0 0 1 6-6Zm4 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-chev-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-chev-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.5"/><path d="M2.5 19.5a6.5 6.5 0 0 1 13 0M16 5.3a3.5 3.5 0 0 1 0 6.4M18 14.2a6.5 6.5 0 0 1 3.5 5.3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.8v.2"/></symbol>
+    <symbol id="i-ok" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.2 2.4 2.4 4.8-4.9"/></symbol>
+    <symbol id="i-warn" viewBox="0 0 24 24"><path d="M10.3 4.6a2 2 0 0 1 3.4 0l7 12.1A2 2 0 0 1 19 19.7H5a2 2 0 0 1-1.7-3z"/><path d="M12 10v4M12 16.8v.2"/></symbol>
+    <symbol id="i-err" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5M12 16v.2"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="5.5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="18.5" r="1.2"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M10 7V4.5h4V7M6.5 7l1 13h9l1-13"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3.5h8l4.5 4.5v12a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5z"/><path d="M13.5 3.5V8.5h5M9 13h6M9 16.5h4"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.1M4.5 12h.1M4.5 18h.1"/></symbol>
+    <symbol id="i-sort" viewBox="0 0 24 24"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7 8.5l5-5 5 5M5 20h14"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20h16M7 16v-4M12 16V7M17 16v-7"/></symbol>
+    <symbol id="i-msg" viewBox="0 0 24 24"><path d="M5 5h14a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-8l-4.5 3.5V17H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 16l-4-4 4-4M6 12h10"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7A1.5 1.5 0 0 1 5 5.5h4.5l2 2.5H19a1.5 1.5 0 0 1 1.5 1.5V18a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 18z"/></symbol>
+    <symbol id="i-tasks" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8 12.2 2.6 2.6L16 9.4"/></symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="top__in">
+    <!-- FILL: product name (and logo mark in the sprite above). -->
+    <p class="top__title"><svg class="mark" aria-hidden="true"><use href="#mark"/></svg><span>Product name · Design system options</span></p>
+    <div class="pick">
+      <label for="opt-seg">Option</label>
+      <div class="seg" role="tablist" id="opt-seg" aria-label="Option shown">
+        <button role="tab" data-set-opt="a" aria-selected="true">A · Calm</button>
+        <button role="tab" data-set-opt="b" aria-selected="false">B · Institutional</button>
+        <button role="tab" data-set-opt="c" aria-selected="false">C · Brand-forward</button>
+      </div>
+      <label for="font-seg">Font</label>
+      <!-- FILL: the project's font candidates. data-font="primary" / "alt" map to --font-primary / --font-alt. -->
+      <div class="seg" role="tablist" id="font-seg" aria-label="Font">
+        <button role="tab" data-set-font="primary" aria-selected="true">Inter</button>
+        <button role="tab" data-set-font="alt" aria-selected="false">IBM Plex Sans</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Contents">
+    <ol>
+      <li><a href="#choose">The three options</a></li>
+      <li><a href="#sources">Sources and what was checked</a></li>
+      <li><a href="#color">Colour</a></li>
+      <li><a href="#type">Type</a></li>
+      <li><a href="#space">Space and grid</a></li>
+      <li><a href="#shape">Shape, depth and motion</a></li>
+      <li><a href="#icons">Icons and focus</a></li>
+      <li><a href="#components">Components</a>
+        <ol>
+          <li><a href="#c-btn">Buttons</a></li>
+          <li><a href="#c-input">Fields</a></li>
+          <li><a href="#c-select">Selects and choices</a></li>
+          <li><a href="#c-search">Search</a></li>
+          <li><a href="#c-tabs">Tabs and toggles</a></li>
+          <li><a href="#c-chip">Chips and status</a></li>
+          <li><a href="#c-avatar">Avatar</a></li>
+          <li><a href="#c-crumbs">Breadcrumb and pagination</a></li>
+          <li><a href="#c-card">Cards</a></li>
+          <li><a href="#c-table">Table</a></li>
+          <li><a href="#c-feedback">Alerts and dialogs</a></li>
+          <li><a href="#c-nav">Navigation bar</a></li>
+        </ol>
+      </li>
+      <li><a href="#screen">Sample screen</a></li>
+      <li><a href="#decide">Open decisions</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <!-- ════════ Choose ════════ -->
+    <section class="sec" id="choose">
+      <h2>Three options for one system</h2>
+      <!-- FILL: what the three options share (palette from <brand source>, type scale from <source>, spacing, sizes) and the three
+           things they differ in. Name the evidence, not adjectives. -->
+      <p class="lead">All three share the same foundations: one brand palette, a type scale that starts at a 16px body, spacing on a 4px unit, and controls that grow on touch screens. They differ in three things: shape, depth, and where the brand colour shows up. Pick any option and the whole page redraws in it.</p>
+
+      <div class="opts">
+        <button class="opt" data-set-opt="a" aria-pressed="true">
+          <span class="opt__on">Showing now</span>
+          <div class="opt__mini"><div class="mini mini--a"><div class="mini__bar"><i style="width:30px"></i><i style="width:22px"></i><i style="width:22px"></i></div><div class="mini__body"><div class="mini__tile"><i style="width:60%"></i><i></i><i style="width:80%"></i><b></b></div><div class="mini__tile"><i></i><i style="width:70%"></i></div></div></div></div>
+          <div class="opt__body">
+            <h3>A · Calm</h3>
+            <!-- FILL: option A in one paragraph — how it relates to the current UI, and its facts computed from its tokens
+                 (primary colour + contrast, radii card/field/button, depth, migration cost with the files it touches). -->
+            <p>A quiet surface that stays out of the way: a light grey ground, borderless white cards lifted by soft shadows, and a primary button in the brand primary. Usually the closest to an existing product, so it mostly adds one scale for type and sizes.</p>
+            <dl class="opt__facts"><dt>Primary button</dt><dd>brand-primary #4F46E5, white text (6.29:1)</dd><dt>Radii</dt><dd>card 20 · field 12 · button 12</dd><dt>Depth</dt><dd>soft shadows, no borders</dd><dt>Migration cost</dt><dd>Lowest — tokens over the current look</dd></dl>
+          </div>
+        </button>
+        <button class="opt" data-set-opt="b" aria-pressed="false">
+          <span class="opt__on">Showing now</span>
+          <div class="opt__mini"><div class="mini mini--b"><div class="mini__bar"><i style="width:30px"></i><i style="width:22px"></i><i style="width:22px"></i></div><div class="mini__body"><div class="mini__tile"><i style="width:60%"></i><i></i><i style="width:80%"></i><b></b></div><div class="mini__tile"><i></i><i style="width:70%"></i></div></div></div></div>
+          <div class="opt__body">
+            <h3>B · Institutional</h3>
+            <!-- FILL: option B in one paragraph, with facts computed from its tokens. If a compliance standard applies, say how close B gets. -->
+            <p>Ruled and orderly: a white ground, 1px hairlines instead of shadows, 8px corners, pill buttons with a 2px outline, and a solid brand-deep top bar. The most disciplined of the three, and the one a formal reviewer tends to expect.</p>
+            <dl class="opt__facts"><dt>Primary button</dt><dd>brand-deep #312E81, white text (11.42:1)</dd><dt>Radii</dt><dd>card 8 · field 8 · pill button</dd><dt>Depth</dt><dd>1px borders; shadow on overlays only</dd><dt>Migration cost</dt><dd>Medium — every card changes shape</dd></dl>
+          </div>
+        </button>
+        <button class="opt" data-set-opt="c" aria-pressed="false">
+          <span class="opt__on">Showing now</span>
+          <div class="opt__mini"><div class="mini mini--c"><div class="mini__bar"><i style="width:30px"></i><i style="width:22px"></i><i style="width:22px"></i></div><div class="mini__body"><div class="mini__tile"><i style="width:60%"></i><i></i><i style="width:80%"></i><b></b></div><div class="mini__tile"><i></i><i style="width:70%"></i></div></div></div></div>
+          <div class="opt__body">
+            <h3>C · Brand-forward</h3>
+            <!-- FILL: option C in one paragraph, with facts computed from its tokens; say where the extra colour goes and what keeps it in check. -->
+            <p>The brand lives in the frame itself: a brand-dark top bar and page header, an accent primary button with dark text, and the secondary palette to tell categories apart. The most distinctive option, and it needs discipline so the colour does not spread.</p>
+            <dl class="opt__facts"><dt>Primary button</dt><dd>brand-accent #0EA5E9, brand-dark text (5.60:1)</dd><dt>Radii</dt><dd>card 16 · field 10 · button 10</dd><dt>Depth</dt><dd>light shadow and a translucent edge</dd><dt>Migration cost</dt><dd>Highest — the page header changes on every screen</dd></dl>
+          </div>
+        </button>
+      </div>
+
+      <div class="sub">
+        <h3>Side by side</h3>
+        <div class="board scroll-x" style="padding:0">
+          <table class="tbl" id="cmp">
+            <thead><tr><th scope="col">Item</th><th scope="col" data-col="a">A · Calm</th><th scope="col" data-col="b">B · Institutional</th><th scope="col" data-col="c">C · Brand-forward</th></tr></thead>
+            <tbody>
+              <!-- FILL: page ground per option — token and hex, read from layer 2. -->
+              <tr><th scope="row">Page ground</th><td data-col="a">#F5F5F7 light grey</td><td data-col="b">White, with #FAFBFC bands</td><td data-col="c">#EFEEF5 (brand-deep 8%)</td></tr>
+              <!-- FILL: top bar per option. -->
+              <tr><th scope="row">Top bar</th><td data-col="a">Translucent white, blurred</td><td data-col="b">brand-deep #312E81</td><td data-col="c">brand-dark #1F2430, page header joins it</td></tr>
+              <!-- FILL: primary button colour, text colour and computed contrast per option. -->
+              <tr><th scope="row">Primary button</th><td data-col="a">brand-primary, white text (6.29:1)</td><td data-col="b">brand-deep, white text (11.42:1)</td><td data-col="c">brand-accent, brand-dark text (5.60:1)</td></tr>
+              <!-- FILL: secondary button per option. -->
+              <tr><th scope="row">Secondary button</th><td data-col="a">Light brand-primary fill</td><td data-col="b">2px brand-deep outline</td><td data-col="c">brand-dark 40% outline</td></tr>
+              <!-- FILL: where the accent colour is used per option. -->
+              <tr><th scope="row">Accent colour</th><td data-col="a">Focus, progress, live status</td><td data-col="b">Progress only</td><td data-col="c">Primary action, active tab, progress</td></tr>
+              <!-- FILL: what the secondary palette is used for per option. -->
+              <tr><th scope="row">Secondary palette</th><td data-col="a">Status only</td><td data-col="b">Status only</td><td data-col="c">Status and categories</td></tr>
+              <!-- FILL: radii card / inner / control per option. -->
+              <tr><th scope="row">Radius (card / inner / control)</th><td data-col="a" class="tnum">20 / 14 / 12</td><td data-col="b" class="tnum">8 / 6 / 8 (pill button)</td><td data-col="c" class="tnum">16 / 10 / 10</td></tr>
+              <!-- FILL: how surfaces separate per option. -->
+              <tr><th scope="row">Surface separation</th><td data-col="a">Shadow</td><td data-col="b">1px border</td><td data-col="c">Light shadow and a translucent edge</td></tr>
+              <!-- FILL: closeness to the compliance standard that applies (or delete this row if none does). -->
+              <tr><th scope="row">Closeness to the standard</th><td data-col="a">Sizes only</td><td data-col="b">Sizes and shape</td><td data-col="c">Sizes only</td></tr>
+              <!-- FILL: effect on the parts of the product outside this scope (e.g. admin screens). -->
+              <tr><th scope="row">Effect on out-of-scope screens</th><td data-col="a">None — independent of them</td><td data-col="b">Closest to a typical admin look; easiest to unify later</td><td data-col="c">None</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ Sources ════════ -->
+    <section class="sec" id="sources">
+      <h2>Sources and what was checked</h2>
+      <!-- FILL: which source wins for what (e.g. sizes from the standard, touch scaling from a token set, colours from the brand guide). -->
+      <p class="lead">Each value below names where it came from and whether it was measured or still needs confirmation. Replace these example rows with the project's own evidence.</p>
+      <div class="board scroll-x" style="padding:0">
+        <table class="tbl">
+          <thead><tr><th scope="col">What we took</th><th scope="col">Value</th><th scope="col">Source</th><th scope="col">Status</th></tr></thead>
+          <tbody>
+            <!-- FILL: one row per sourced value: the value, the source (file:line, package@version + file, guide page), and verify--yes (measured, with date) or verify--q (unconfirmed, with why). -->
+            <tr><th scope="row">Body size and heading scale</th><td class="tnum">16px · 40 · 32 · 28 · 24 · 20</td><td>Existing CSS — <code>path/to/app.css:LINE</code></td><td><span class="verify verify--yes">Measured</span></td></tr>
+            <!-- FILL: sourced value row. -->
+            <tr><th scope="row">Spacing and control heights</th><td class="tnum">4px base · 32 · 40 · 48 → mobile 40 · 48 · 56</td><td>Standard X — <code>package@version</code>, file</td><td><span class="verify verify--yes">Measured</span></td></tr>
+            <!-- FILL: sourced value row. -->
+            <tr><th scope="row">Brand colours</th><td>5 primary · 4 secondary · 3 greys</td><td>Brand guide — page / section</td><td><span class="verify verify--q">To confirm</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- FILL: caveats about the sources (an outdated reference, an unreachable spec, what is still unconfirmed). -->
+      <p class="spec">Every number in this demo is a placeholder. A value with no source row is an assumption and belongs in Open decisions.</p>
+    </section>
+
+    <!-- ════════ Color ════════ -->
+    <section class="sec" id="color">
+      <h2>Colour</h2>
+      <!-- FILL: the palette's origin and which steps are official vs. added (e.g. "20–80% are in the guide; 8% added for washes"). -->
+      <p class="lead">One palette in all three options; what changes is the role each colour plays. Steps 20 to 80% are tints of each base colour, and an 8% step is added for light washes.</p>
+
+      <div class="sub" style="margin-top:0">
+        <h3>Primary palette</h3>
+        <div class="board" id="ramps"></div>
+        <!-- FILL: colour notes from the project (a colour new to the codebase, a brand colour that fails as text and its stand-in). -->
+        <p class="spec">brand-accent is not usable as text on white (2.77:1); its text-safe stand-in is <code>accent-ink #0A7CAF</code> (4.65:1).</p>
+      </div>
+
+      <div class="sub">
+        <h3>Secondary palette</h3>
+        <p>In options A and B these are for status only. In option C they also tell categories apart, one colour per category.</p>
+        <div class="board" id="ramps2"></div>
+      </div>
+
+      <div class="sub">
+        <h3>Status colours</h3>
+        <!-- FILL: which status hues come from the brand guide and which had to be added (and why). -->
+        <p>Each status has three values: a light wash, an ink that reaches 4.5:1 on that wash, and a dot. Green, blue and yellow come from the secondary palette; red is added because the palette has no error colour.</p>
+        <div class="status-grid">
+          <div class="st" style="background:var(--ok-bg);color:var(--ok);--d:var(--ok-dot)"><b>Done</b><small><span dir="ltr">#ECF8F1 · #107937 · 5.05</span></small></div>
+          <div class="st" style="background:var(--info-bg);color:var(--info);--d:var(--info-dot)"><b>Upcoming</b><small><span dir="ltr">#EBF6F9 · #06728C · 5.03</span></small></div>
+          <div class="st" style="background:var(--warn-bg);color:var(--warn);--d:var(--warn-dot)"><b>Awaiting reply</b><small><span dir="ltr">#FEF7EB · #946007 · 5.01</span></small></div>
+          <div class="st" style="background:var(--err-bg);color:var(--err);--d:var(--err-dot)"><b>Rejected</b><small><span dir="ltr">#FEF3F2 · #B42318 · 6.05</span></small></div>
+          <div class="st" style="background:var(--mute-bg);color:var(--mute);--d:var(--mute-dot)"><b>Archived</b><small><span dir="ltr">#F2F4F7 · #475467 · 6.98</span></small></div>
+        </div>
+      </div>
+
+      <div class="sub">
+        <h3>Roles in the option shown</h3>
+        <div class="board scroll-x" style="padding:0">
+          <table class="tbl" id="roles"><thead><tr><th scope="col">Role</th><th scope="col">Sample</th><th scope="col">Token</th><th scope="col">Value</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ Type ════════ -->
+    <section class="sec" id="type">
+      <h2>Type</h2>
+      <!-- FILL: where the scale comes from and how it behaves on mobile. -->
+      <p class="lead">One scale: a 16px body with headings at 40, 32, 28, 24 and 20. On phones the headings step down and the body stays at 16, so iOS never zooms into a focused field.</p>
+      <div class="board" id="typescale"></div>
+      <!-- FILL: what changes for users compared with the current UI (measured: number of sizes today, the most common size, file:line). -->
+      <p class="spec">The smallest size that carries words is 13px. Keep letter-spacing at zero for any Arabic text.</p>
+
+      <div class="sub">
+        <h3>Weights</h3>
+        <div class="board">
+          <div class="row" style="gap:32px;font-size:var(--fs-h5)">
+            <span style="font-weight:300">Light 300</span><span style="font-weight:400">Regular 400</span><span style="font-weight:500">Medium 500</span><span style="font-weight:700">Bold 700</span>
+          </div>
+          <!-- FILL: weight rules, and any weight the project's font lacks (and what a request for it falls back to). -->
+          <p class="spec">Body 400; small headings, labels and buttons 500; headings 700. 300 is for large numerals only.</p>
+        </div>
+      </div>
+
+      <div class="sub">
+        <h3>A paragraph at real length</h3>
+        <div class="board">
+          <!-- FILL: a real paragraph from the product, at its real length. -->
+          <p style="max-width:62ch;margin:0">The Website relaunch project brings marketing, design and engineering onto one plan for six weeks. Each team owns its own board, and a weekly review keeps the scope in check. When 80% of the tasks are done and the final review passes, the project moves to billing and an invoice goes to the client.</p>
+          <p class="spec">Maximum measure 62 characters; line height 1.62 (26px for 16px text).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ Space ════════ -->
+    <section class="sec" id="space">
+      <h2>Space and grid</h2>
+      <!-- FILL: spacing rationale (keep or adapt). -->
+      <p class="lead">Every gap is a multiple of 4px. Related items sit close, groups sit apart, and the space above a heading is larger than the space below it.</p>
+      <div class="grid2">
+        <div class="board" id="spacing"></div>
+        <div class="board">
+          <!-- FILL: the breakpoints the project's CSS framework actually uses. -->
+          <span class="cap">Breakpoints — Bootstrap-style (demo)</span>
+          <div class="bp" id="bps"></div>
+          <p class="spec">Mobile first: the base styles serve the small screen, and each breakpoint adds what a larger screen needs with <code>min-width</code>. A 12-column grid, 24px gutters on desktop and 16px on phones, and a 1320px maximum content width.</p>
+        </div>
+      </div>
+      <div class="sub">
+        <h3>Control heights</h3>
+        <!-- FILL: how many control heights exist today (measured) and why three are enough. -->
+        <p>Three sizes only. Each grows on touch screens, so no button or field on a phone is shorter than 40px.</p>
+        <div class="board scroll-x" style="padding:0">
+          <table class="tbl"><thead><tr><th scope="col">Size</th><th scope="col">Desktop</th><th scope="col">Mobile</th><th scope="col">Use</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Small S</th><td class="tnum">32</td><td class="tnum">40</td><td>Inside tables, dense filters, row actions</td></tr>
+              <tr><th scope="row">Medium M</th><td class="tnum">40</td><td class="tnum">48</td><td>Default: buttons, fields, selects</td></tr>
+              <tr><th scope="row">Large L</th><td class="tnum">48</td><td class="tnum">56</td><td>The main action of a long form; the main search</td></tr>
+            </tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ Shape ════════ -->
+    <section class="sec" id="shape">
+      <h2>Shape, depth and motion</h2>
+      <!-- FILL: keep or adapt. -->
+      <p class="lead">This section differs most between the options. The values shown are for the option selected at the top.</p>
+      <div class="shape-grid">
+        <div class="shape" style="border-radius:var(--r-card);box-shadow:var(--sh-1)"><div><b>Card</b><span class="tnum" data-tok="--r-card"></span> · shadow 1</div></div>
+        <div class="shape" style="border-radius:var(--r-inner);box-shadow:var(--sh-2)"><div><b>Inner element</b><span class="tnum" data-tok="--r-inner"></span> · shadow 2</div></div>
+        <div class="shape" style="border-radius:var(--r-ctl);box-shadow:var(--sh-pop)"><div><b>Popover</b><span class="tnum" data-tok="--r-ctl"></span> · pop shadow</div></div>
+        <div class="shape" style="border-radius:var(--r-btn);aspect-ratio:auto;height:var(--h-m);background:var(--primary);color:var(--on-primary);border:0"><b style="color:inherit">Button</b></div>
+      </div>
+      <!-- FILL: depth and motion rules, if the project already has some. -->
+      <p class="spec">Each shadow level has a vertical offset and a soft spread, tinted with brand-dark rather than black. Motion starts fast and eases out (<code>cubic-bezier(.16,1,.3,1)</code>) over 200ms. Content reveals on page load happen once and take 600ms. All of it stops when the user asks the system for reduced motion.</p>
+    </section>
+
+    <!-- ════════ Icons + focus ════════ -->
+    <section class="sec" id="icons">
+      <h2>Icons and focus</h2>
+      <!-- FILL: the project's icon set (name, stroke, sizes). -->
+      <p class="lead">One outline icon set at a 1.6 stroke, in three sizes: 16, 20 and 24. Directional icons (arrows, back, breadcrumb separators) mirror with text direction; the rest never do.</p>
+      <div class="board">
+        <div class="icons" id="iconset"></div>
+      </div>
+      <div class="sub">
+        <h3>Focus ring</h3>
+        <!-- FILL: the current focus colour and its measured contrast, and what replaces it in each option. -->
+        <p>Shown for keyboard navigation only. brand-accent on white is 2.77:1, under the 3:1 that UI components need, so the ring is <code>focus-accent #0D96D4</code> (3.32:1) in options A and C, and brand-deep (11.42:1) in option B.</p>
+        <div class="board row">
+          <button class="btn btn--primary" style="outline:2px solid var(--focus);outline-offset:2px">Focused button</button>
+          <a href="#icons" style="outline:2px solid var(--focus);outline-offset:2px;border-radius:4px">Focused link</a>
+          <div class="ctl" style="width:220px;border-color:var(--focus);box-shadow:0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent)"><input value="Focused field" aria-label="Example"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ Components ════════ -->
+    <section class="sec" id="components">
+      <h2>Components</h2>
+      <p class="lead">Every component here takes its values from the tokens of the option shown. Switch the option at the top to see the same component in another shape.</p>
+
+      <!-- Buttons -->
+      <div class="sub" id="c-btn">
+        <h3>Buttons</h3>
+        <p>One primary button per region of the page; the secondary button for what comes after it. A button label is a clear verb, such as "Create project" rather than "Submit".</p>
+        <div class="board">
+          <span class="cap">Variants</span>
+          <div class="row">
+            <button class="btn btn--primary">Create project</button>
+            <button class="btn btn--secondary">Save draft</button>
+            <button class="btn btn--ghost">View details</button>
+            <button class="btn btn--danger">Delete project</button>
+            <button class="btn btn--danger-soft">Remove file</button>
+          </div>
+          <span class="cap" style="margin-top:24px">Sizes S · M · L</span>
+          <div class="row">
+            <button class="btn btn--primary btn--s"><svg class="i i--s"><use href="#i-plus"/></svg>Add</button>
+            <button class="btn btn--primary"><svg class="i"><use href="#i-plus"/></svg>Add</button>
+            <button class="btn btn--primary btn--l"><svg class="i"><use href="#i-plus"/></svg>Add</button>
+            <button class="btn btn--secondary btn--s"><svg class="i i--s"><use href="#i-down"/></svg>Export</button>
+            <button class="btn btn--secondary"><svg class="i"><use href="#i-down"/></svg>Export</button>
+            <button class="btn btn--secondary btn--l"><svg class="i"><use href="#i-down"/></svg>Export</button>
+          </div>
+          <span class="cap" style="margin-top:24px">States and icons</span>
+          <div class="row">
+            <button class="btn btn--primary" disabled>Unavailable</button>
+            <button class="btn btn--primary is-loading" aria-busy="true">Saving</button>
+            <button class="btn btn--primary">Notifications <span class="badge-n tnum">3</span></button>
+            <button class="btn btn--secondary">Next<svg class="i flip"><use href="#i-chev"/></svg></button>
+            <button class="btn btn--secondary btn--icon" aria-label="Edit"><svg class="i"><use href="#i-edit"/></svg></button>
+            <button class="btn btn--ghost btn--icon" aria-label="More"><svg class="i"><use href="#i-more"/></svg></button>
+            <div class="btn-group" role="group" aria-label="View">
+              <button class="btn btn--secondary btn--icon" aria-label="Grid" aria-pressed="true" style="background:var(--select-wash)"><svg class="i"><use href="#i-grid"/></svg></button>
+              <button class="btn btn--secondary btn--icon" aria-label="List"><svg class="i"><use href="#i-list"/></svg></button>
+            </div>
+          </div>
+          <p class="spec">The icon goes before the label; an arrow that shows direction goes after it. An icon-only button is square at its size's height and carries an <code>aria-label</code>. While loading, a spinner replaces the label and the button keeps its width.</p>
+        </div>
+      </div>
+
+      <!-- Inputs -->
+      <div class="sub" id="c-input">
+        <h3>Fields</h3>
+        <p>The label always sits above the field, never inside it. Mark required fields with an asterisk when most fields are optional, and optional ones with "Optional" when most are required. An error message says what is wrong and how to fix it.</p>
+        <div class="board grid2">
+          <div class="field">
+            <label class="field__label" for="f1">Full name <span class="req" aria-hidden="true">*</span></label>
+            <div class="ctl"><input id="f1" placeholder="As it appears on invoices" autocomplete="name"></div>
+            <span class="field__help">Shown on invoices and receipts.</span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="f2">Phone number</label>
+            <div class="ctl is-error"><span class="ctl__affix" dir="ltr" style="border:0;margin:0;padding:0">+1</span><input id="f2" value="555-01" inputmode="tel" dir="ltr" aria-invalid="true" aria-describedby="f2e"></div>
+            <span class="field__help field__help--err" id="f2e"><svg class="i"><use href="#i-err"/></svg>The number is incomplete — enter 10 digits.</span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="f3">Email <span class="opt-t">Optional</span></label>
+            <div class="ctl is-ok"><svg class="i"><use href="#i-msg"/></svg><input id="f3" value="sam.rivera@example.com" dir="ltr"><svg class="i" style="color:var(--ok)"><use href="#i-check"/></svg></div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="f4">Company</label>
+            <div class="ctl is-disabled"><input id="f4" value="Example Inc." disabled></div>
+            <span class="field__help">Change this in workspace settings, not here.</span>
+          </div>
+          <div class="field" style="grid-column:1/-1">
+            <label class="field__label" for="f5">Project brief</label>
+            <div class="ctl ctl--area"><textarea id="f5" placeholder="Describe the goal in a sentence or two"></textarea></div>
+            <span class="field__help tnum">0 / 500 characters</span>
+          </div>
+          <div class="field">
+            <span class="field__label">Sizes</span>
+            <div class="ctl ctl--s"><input placeholder="Small S" aria-label="Small"></div>
+            <div class="ctl"><input placeholder="Medium M" aria-label="Medium"></div>
+            <div class="ctl ctl--l"><input placeholder="Large L" aria-label="Large"></div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="f6">Upload a file</label>
+            <label class="ctl" for="f6" style="height:auto;padding:20px;border-style:dashed;justify-content:center;flex-direction:column;gap:6px;cursor:pointer;text-align:center">
+              <svg class="i i--l" style="color:var(--select-ink)"><use href="#i-upload"/></svg>
+              <span style="font-size:var(--fs-sm)"><b style="color:var(--link);font-weight:500">Choose a file</b> or drag it here</span>
+              <small style="color:var(--ink-3);font-size:var(--fs-xs)">PDF or image · up to 5 MB</small>
+              <input id="f6" type="file" class="sr">
+            </label>
+          </div>
+        </div>
+        <!-- FILL: how fields look today (measured) and why the new edge is needed. -->
+        <p class="spec">The field border <code data-tok="--line-input"></code> reaches 3:1 on white (n350 #868FA0 is 3.26:1 in A and C; brand-dark-60 #797C83 is 4.18:1 in B).</p>
+      </div>
+
+      <!-- Select / choice -->
+      <div class="sub" id="c-select">
+        <h3>Selects and choices</h3>
+        <p>Use the native select when there are more than five options. With five or fewer, show them all as radio buttons so nobody has to open a menu.</p>
+        <div class="board grid2">
+          <div class="field">
+            <label class="field__label" for="s1">Region</label>
+            <div class="ctl ctl--select"><select id="s1"><option>North America</option><option>Europe</option><option>Middle East</option><option>Asia Pacific</option></select></div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="s2">Team</label>
+            <div class="ctl ctl--select"><select id="s2"><option value="">Choose a team</option><option>Design</option><option>Engineering</option></select></div>
+            <span class="field__help">Only teams you belong to.</span>
+          </div>
+          <div class="field">
+            <span class="field__label">Open list, multiple choice</span>
+            <div class="ctl" style="height:auto;min-height:var(--h-m);flex-wrap:wrap;padding-block:5px;gap:6px">
+              <span class="tag">Design<button aria-label="Remove Design"><svg class="i i--s"><use href="#i-x"/></svg></button></span>
+              <span class="tag">Engineering<button aria-label="Remove Engineering"><svg class="i i--s"><use href="#i-x"/></svg></button></span>
+              <input placeholder="Add a label" aria-label="Add a label" style="min-width:80px">
+            </div>
+            <div class="menu" role="listbox" aria-label="Labels" style="margin-top:6px">
+              <a href="#c-select" role="option"><svg class="i"><use href="#i-check"/></svg>Design</a>
+              <a href="#c-select" role="option"><svg class="i"><use href="#i-check"/></svg>Engineering</a>
+              <a href="#c-select" role="option" aria-selected="true" style="background:var(--select-wash)"><svg class="i" style="opacity:0"><use href="#i-check"/></svg>Finance</a>
+              <a href="#c-select" role="option"><svg class="i" style="opacity:0"><use href="#i-check"/></svg>Operations</a>
+            </div>
+          </div>
+          <div class="field" style="align-content:start;gap:14px">
+            <span class="field__label">Checkboxes, radios and a switch</span>
+            <label class="choice"><input type="checkbox" checked> I agree to the workspace terms</label>
+            <label class="choice"><input type="checkbox"> <span>Remind me before due dates<small>By email and push notification</small></span></label>
+            <label class="choice"><input type="checkbox" id="indet"> Select all</label>
+            <label class="choice"><input type="checkbox" disabled> Unavailable</label>
+            <div class="row" style="gap:20px">
+              <label class="choice"><input type="radio" name="r" checked> Board</label>
+              <label class="choice"><input type="radio" name="r"> List</label>
+              <label class="choice"><input type="radio" name="r"> Timeline</label>
+            </div>
+            <label class="switch"><input type="checkbox" role="switch" checked> Email notifications</label>
+          </div>
+          <div class="field" style="grid-column:1/-1">
+            <span class="field__label">Choice cards</span>
+            <div class="row">
+              <label class="choice-card"><input type="radio" name="rc" class="sr" checked><span class="choice" style="pointer-events:none"><input type="radio" checked tabindex="-1" aria-hidden="true"><span><b style="font-weight:500">Starter</b><small>Up to 5 members</small></span></span></label>
+              <label class="choice-card"><input type="radio" name="rc" class="sr"><span class="choice" style="pointer-events:none"><input type="radio" tabindex="-1" aria-hidden="true"><span><b style="font-weight:500">Team</b><small>Up to 50 members · billed monthly</small></span></span></label>
+              <label class="choice-card"><input type="radio" name="rc" class="sr"><span class="choice" style="pointer-events:none"><input type="radio" tabindex="-1" aria-hidden="true"><span><b style="font-weight:500">Enterprise</b><small>Custom contract</small></span></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="sub" id="c-search">
+        <h3>Search</h3>
+        <p>Search comes in two forms: a wide main search in the page header that looks everywhere, and a small search inside a table that filters its rows. Results are grouped, and the matching word is highlighted.</p>
+        <div class="board grid2">
+          <div class="search search--hero">
+            <span class="cap">Main search (L)</span>
+            <div class="ctl" role="combobox" aria-expanded="true" aria-haspopup="listbox"><svg class="i"><use href="#i-search"/></svg><input value="report" aria-label="Search projects and people"><button class="search__clear" aria-label="Clear"><svg class="i i--s"><use href="#i-x"/></svg></button></div>
+            <div class="search__panel" role="listbox" aria-label="Search results">
+              <div class="search__group">Projects</div>
+              <a class="search__item" href="#c-search" role="option" aria-selected="true"><span class="tile-i"><svg class="i i--s"><use href="#i-folder"/></svg></span><span>Quarterly <mark>report</mark></span><small>12 tasks</small></a>
+              <a class="search__item" href="#c-search" role="option"><span class="tile-i"><svg class="i i--s"><use href="#i-folder"/></svg></span><span><mark>Report</mark>ing dashboard</span><small>4 tasks</small></a>
+              <div class="search__group">People</div>
+              <a class="search__item" href="#c-search" role="option"><span class="av av--s av--g1">JL</span><span>Jordan Lee — owns <mark>report</mark>s</span></a>
+            </div>
+          </div>
+          <div>
+            <span class="cap">Table search (M) with a shortcut</span>
+            <div class="search"><div class="ctl"><svg class="i"><use href="#i-search"/></svg><input placeholder="Search by name or ID" aria-label="Search members"><kbd>/</kbd></div></div>
+            <span class="cap" style="margin-top:24px">Search with no results</span>
+            <div class="search"><div class="ctl"><svg class="i"><use href="#i-search"/></svg><input value="advanced cost forecast" aria-label="Search"><button class="search__clear" aria-label="Clear"><svg class="i i--s"><use href="#i-x"/></svg></button></div>
+              <div class="search__panel"><div class="empty" style="padding:20px"><p style="margin:0">No projects named “advanced cost forecast”.<br>Try a shorter word, or <a href="#c-search">browse all projects</a>.</p></div></div>
+            </div>
+            <span class="cap" style="margin-top:24px">Quick filters</span>
+            <div class="row" style="gap:8px">
+              <button class="filter-chip" aria-pressed="true">All <span class="tnum">24</span></button>
+              <button class="filter-chip" aria-pressed="false">In progress</button>
+              <button class="filter-chip" aria-pressed="false">Upcoming</button>
+              <button class="filter-chip" aria-pressed="false"><svg class="i i--s"><use href="#i-filter"/></svg>More filters</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="sub" id="c-tabs">
+        <h3>Tabs and toggles</h3>
+        <p>A segmented toggle changes how the same data is shown, such as week or month. Tabs move between different sections of a page.</p>
+        <div class="board">
+          <span class="cap">Segmented toggle</span>
+          <div class="seg" role="tablist" aria-label="Period"><button role="tab" aria-selected="true">This week</button><button role="tab" aria-selected="false">This month</button><button role="tab" aria-selected="false">All <span class="n tnum">48</span></button></div>
+          <span class="cap" style="margin-top:28px">Tabs</span>
+          <div class="tabs" role="tablist" aria-label="Project sections">
+            <button role="tab" aria-selected="true">Overview</button>
+            <button role="tab" aria-selected="false">Tasks <span class="n tnum">12</span></button>
+            <button role="tab" aria-selected="false">Members <span class="n tnum">34</span></button>
+            <button role="tab" aria-selected="false">Files</button>
+            <button role="tab" aria-selected="false">Settings</button>
+          </div>
+          <span class="cap" style="margin-top:28px">Steps</span>
+          <ol class="stepper" aria-label="Sign-up steps">
+            <li class="done">Account details</li><li class="done">Choose a plan</li><li class="now" aria-current="step">Invite your team</li><li>Confirm</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Chips -->
+      <div class="sub" id="c-chip">
+        <h3>Chips and status</h3>
+        <p>A status chip pairs a coloured dot with text and never relies on colour alone. A category chip classifies content. A removable tag shows what the user picked.</p>
+        <div class="board">
+          <span class="cap">Status</span>
+          <div class="row" style="gap:8px">
+            <span class="chip chip--dot chip--ok">Done</span><span class="chip chip--dot chip--info">Upcoming</span><span class="chip chip--dot chip--warn">Awaiting approval</span><span class="chip chip--dot chip--err">Rejected</span><span class="chip chip--dot">Archived</span><span class="chip chip--dot chip--brand">In progress</span>
+          </div>
+          <span class="cap" style="margin-top:20px">Category · tag · count</span>
+          <div class="row" style="gap:8px">
+            <span class="cat">Product</span><span class="cat cat--alt-1">Finance</span><span class="cat cat--alt-2">Engineering</span><span class="cat cat--alt-4">Operations</span><span class="cat cat--alt-3">Legal</span>
+            <span class="chip chip--outline chip--l"><svg class="i i--s"><use href="#i-pin"/></svg>Remote</span>
+            <span class="tag">2026<button aria-label="Remove"><svg class="i i--s"><use href="#i-x"/></svg></button></span>
+            <span class="count tnum">9</span><span class="count tnum">99+</span>
+          </div>
+          <p class="spec">In option C each category takes a colour from the secondary palette. In A and B categories are grey and colour stays reserved for status.</p>
+        </div>
+      </div>
+
+      <!-- Avatar -->
+      <div class="sub" id="c-avatar">
+        <h3>Avatar</h3>
+        <p>Without a photo, show the initials of the first and last name. The background colour is derived from the name, so a person keeps the same colour on every screen. The presence dot appears only where presence matters.</p>
+        <div class="board">
+          <div class="row" style="gap:20px;align-items:flex-end">
+            <span class="av av--xs">SR</span><span class="av av--s">SR</span><span class="av">SR</span><span class="av av--l">SR</span><span class="av av--xl">SR</span>
+            <span class="av av--sq av--l av--g3">A</span>
+          </div>
+          <p class="spec tnum">24 · 32 · 40 · 56 · 80 — the rounded square is for organisations, the circle for people.</p>
+          <div class="row" style="gap:32px;margin-top:20px">
+            <span class="av av--g1">JL<span class="av__dot"></span></span>
+            <span class="av av--g2">MK<span class="av__dot av__dot--away"></span></span>
+            <span class="av av--g4">TP<span class="av__dot av__dot--off"></span></span>
+            <span class="av-stack"><span class="av av--s av--g1">J</span><span class="av av--s av--g2">M</span><span class="av av--s av--g3">R</span><span class="av av--s">S</span><span class="av av--s av-more tnum">+12</span></span>
+            <div class="who"><span class="av av--g1">JL</span><div><b>Jordan Lee</b><small>Designer · Product team</small></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Breadcrumb + pagination -->
+      <div class="sub" id="c-crumbs">
+        <h3>Breadcrumb and pagination</h3>
+        <p>The breadcrumb starts with a home icon, and the current page comes last and is not a link. On phones the middle levels collapse into a "…" button. Pagination shows how many records are on screen out of the total.</p>
+        <div class="board">
+          <nav class="crumbs crumbs--m" aria-label="Breadcrumb">
+            <ol>
+              <li><a href="#c-crumbs"><svg class="i i--s"><use href="#i-home"/></svg><span class="sr">Home</span></a><svg class="i sep flip" aria-hidden="true"><use href="#i-chev"/></svg></li>
+              <li class="show-m"><button class="more" aria-label="Hidden levels">…</button><svg class="i sep flip" aria-hidden="true"><use href="#i-chev"/></svg></li>
+              <li class="hide-m"><a href="#c-crumbs">Projects</a><svg class="i sep flip" aria-hidden="true"><use href="#i-chev"/></svg></li>
+              <li class="hide-m"><a href="#c-crumbs">Website relaunch</a><svg class="i sep flip" aria-hidden="true"><use href="#i-chev"/></svg></li>
+              <li><a href="#c-crumbs">Tasks</a><svg class="i sep flip" aria-hidden="true"><use href="#i-chev"/></svg></li>
+              <li><span aria-current="page">Homepage copy</span></li>
+            </ol>
+          </nav>
+          <div style="margin-top:28px" class="pager">
+            <span class="tnum">Showing 11–20 of 234</span>
+            <nav class="pager__pages" aria-label="Pages">
+              <a href="#c-crumbs" aria-label="Previous"><svg class="i i--s flip"><use href="#i-chev-back"/></svg></a>
+              <a href="#c-crumbs">1</a><a href="#c-crumbs" aria-current="page">2</a><a href="#c-crumbs">3</a><span class="is-off">…</span><a href="#c-crumbs">24</a>
+              <a href="#c-crumbs" aria-label="Next"><svg class="i i--s flip"><use href="#i-chev"/></svg></a>
+            </nav>
+            <div class="ctl ctl--select ctl--s" style="width:auto"><select aria-label="Rows per page"><option>10 per page</option><option>25 per page</option></select></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cards -->
+      <div class="sub" id="c-card">
+        <h3>Cards</h3>
+        <p>A card holds one thing that can be opened — a project, a task, an invoice — and is not a general-purpose box. Never put a card inside another card.</p>
+        <div class="grid3">
+          <a class="card item" href="#c-card">
+            <div class="item__cover"><svg class="i"><use href="#i-folder"/></svg><span class="cat">Marketing</span></div>
+            <div class="card__body">
+              <h4>Website relaunch</h4>
+              <div class="meta"><span><svg class="i"><use href="#i-cal"/></svg>3 – 14 Nov</span><span><svg class="i"><use href="#i-pin"/></svg>Remote</span></div>
+              <div class="prog" style="margin-top:16px"><div class="prog__top"><span>Progress</span><b class="tnum">62%</b></div><div class="prog__track" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" aria-label="Progress"><div class="prog__fill" style="--v:62%"></div></div></div>
+            </div>
+            <div class="card__foot"><span class="chip chip--dot chip--brand">In progress</span><span style="margin-inline-start:auto;font-size:var(--fs-sm);color:var(--link);font-weight:500">Continue</span></div>
+          </a>
+          <a class="card item" href="#c-card">
+            <div class="item__cover item__cover--alt-1"><svg class="i"><use href="#i-users"/></svg><span class="cat cat--alt-1">Finance</span></div>
+            <div class="card__body">
+              <h4>Billing migration</h4>
+              <div class="meta"><span><svg class="i"><use href="#i-cal"/></svg>17 – 21 Nov</span><span><svg class="i"><use href="#i-clock"/></svg>20 hours</span></div>
+              <div class="who" style="margin-top:16px"><span class="av av--s av--g1">JL</span><div><b>Jordan Lee</b></div></div>
+            </div>
+            <div class="card__foot"><span class="chip chip--dot chip--warn">Awaiting approval</span></div>
+          </a>
+          <div class="card">
+            <div class="empty">
+              <div class="empty__art"><svg class="i"><use href="#i-file"/></svg></div>
+              <h4>No invoices yet</h4>
+              <p>Invoices appear here once the first project is billed.</p>
+              <a class="btn btn--secondary btn--s" href="#c-card">Create invoice</a>
+            </div>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top:20px">
+          <div class="card">
+            <div class="card__head"><h4>Upcoming</h4><a class="btn btn--ghost btn--s" href="#c-card">View all</a></div>
+            <div class="card__body list">
+              <div class="li"><div class="date-chip"><b>4</b><small>Nov</small></div><div class="li__main"><b>Design review</b><small>9:00 – 12:00 · Room 3</small></div><span class="chip chip--dot chip--info">On site</span></div>
+              <div class="li"><div class="date-chip"><b>6</b><small>Nov</small></div><div class="li__main"><b>Stakeholder sync</b><small>1:00 – 3:00 · Video call</small></div><span class="chip chip--dot">Remote</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card__head"><h4>Loading</h4></div>
+            <div class="card__body" aria-busy="true">
+              <div class="li"><div class="skel" style="width:52px;height:52px;border-radius:var(--r-inner)"></div><div class="li__main"><div class="skel" style="height:14px;width:70%"></div><div class="skel" style="height:12px;width:40%;margin-top:8px"></div></div></div>
+              <div class="li"><div class="skel" style="width:52px;height:52px;border-radius:var(--r-inner)"></div><div class="li__main"><div class="skel" style="height:14px;width:55%"></div><div class="skel" style="height:12px;width:35%;margin-top:8px"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="sub" id="c-table">
+        <h3>Table</h3>
+        <p>Numbers in tables use tabular figures and align to the end of the cell so digits line up. Row actions live in one menu at the end of the row. On phones the table scrolls sideways; columns never fold into the rows.</p>
+        <div class="dt-wrap">
+          <div class="dt-bar">
+            <div class="search"><div class="ctl ctl--s"><svg class="i i--s"><use href="#i-search"/></svg><input placeholder="Search by client" aria-label="Search invoices"></div></div>
+            <div class="seg" role="tablist" aria-label="Status"><button role="tab" aria-selected="true">All</button><button role="tab" aria-selected="false">Paid</button><button role="tab" aria-selected="false">Overdue</button></div>
+            <button class="btn btn--secondary btn--s" style="margin-inline-start:auto"><svg class="i i--s"><use href="#i-down"/></svg>Export</button>
+          </div>
+          <div class="scroll-x">
+            <table class="dt">
+              <thead><tr><th scope="col"><label class="choice"><input type="checkbox" aria-label="Select all"></label></th><th scope="col"><button>Client<svg class="i i--s"><use href="#i-sort"/></svg></button></th><th scope="col">Project</th><th scope="col"><button>Due<svg class="i i--s"><use href="#i-sort"/></svg></button></th><th scope="col" class="num">Amount</th><th scope="col">Status</th><th scope="col"><span class="sr">Actions</span></th></tr></thead>
+              <tbody>
+                <tr><td><label class="choice"><input type="checkbox" aria-label="Select"></label></td><td><div class="who"><span class="av av--s av--sq av--g1">AC</span><div><b>Acme Corp</b><small class="tnum">INV-1042</small></div></div></td><td>Website relaunch</td><td class="tnum">12 Nov</td><td class="num">$4,250.00</td><td><span class="chip chip--dot chip--ok">Paid</span></td><td><button class="btn btn--ghost btn--icon btn--s" aria-label="Actions"><svg class="i"><use href="#i-more"/></svg></button></td></tr>
+                <tr aria-selected="true"><td><label class="choice"><input type="checkbox" checked aria-label="Select"></label></td><td><div class="who"><span class="av av--s av--sq av--g2">GL</span><div><b>Globex Ltd</b><small class="tnum">INV-1043</small></div></div></td><td>Billing migration</td><td class="tnum">18 Nov</td><td class="num">$1,980.50</td><td><span class="chip chip--dot chip--brand">Sent</span></td><td><button class="btn btn--ghost btn--icon btn--s" aria-label="Actions"><svg class="i"><use href="#i-more"/></svg></button></td></tr>
+                <tr><td><label class="choice"><input type="checkbox" aria-label="Select"></label></td><td><div class="who"><span class="av av--s av--sq av--g3">IN</span><div><b>Initech</b><small class="tnum">INV-1039</small></div></div></td><td>Support retainer</td><td class="tnum">2 Nov</td><td class="num">$760.00</td><td><span class="chip chip--dot chip--err">Overdue</span></td><td><button class="btn btn--ghost btn--icon btn--s" aria-label="Actions"><svg class="i"><use href="#i-more"/></svg></button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="dt-bar" style="border-top:1px solid var(--n100);border-bottom:0"><div class="pager" style="width:100%"><span class="tnum">3 of 34 invoices · 1 selected</span><nav class="pager__pages" aria-label="Pages"><a href="#c-table" aria-current="page">1</a><a href="#c-table">2</a><a href="#c-table">3</a><a href="#c-table">4</a></nav></div></div>
+        </div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="sub" id="c-feedback">
+        <h3>Alerts, dialogs and menus</h3>
+        <p>An inline alert stays until its cause changes. A toast confirms that an action happened and offers to undo it. A dialog is only for an action that cannot be undone.</p>
+        <div class="grid2">
+          <div style="display:grid;gap:12px">
+            <div class="alert alert--info" role="status"><svg class="i"><use href="#i-info"/></svg><div><b>Invitations are open until 20 November</b>New members need an admin's approval before they can edit.</div></div>
+            <div class="alert alert--ok" role="status"><svg class="i"><use href="#i-ok"/></svg><div><b>Invoice sent</b>We emailed a copy to the client and to you.</div></div>
+            <div class="alert alert--warn" role="alert"><svg class="i"><use href="#i-warn"/></svg><div><b>You're close to your storage limit</b>You've used 9.2 GB of 10 GB. Uploads stop when the limit is reached.<div class="acts"><a class="btn btn--secondary btn--s" href="#c-feedback">Upgrade plan</a></div></div></div>
+            <div class="alert alert--err" role="alert"><svg class="i"><use href="#i-err"/></svg><div><b>The file wasn't uploaded</b>The file is 8 MB and the limit is 5 MB. Compress or split it, then try again.</div><button class="btn btn--ghost btn--icon btn--s alert__x" aria-label="Close"><svg class="i i--s"><use href="#i-x"/></svg></button></div>
+            <div class="toast" role="status"><svg class="i"><use href="#i-ok"/></svg><span>Deleted “project-plan.pdf”</span><button class="btn btn--ghost btn--s" style="margin-inline-start:auto">Undo</button></div>
+            <div class="row" style="gap:32px;margin-top:40px;align-items:flex-start">
+              <span class="tip-wrap"><button class="btn btn--secondary btn--icon" aria-label="Download invoice" aria-describedby="tip1"><svg class="i"><use href="#i-down"/></svg></button><span class="tip" role="tooltip" id="tip1">Download invoice</span></span>
+              <div class="menu" role="menu" aria-label="Member actions">
+                <a href="#c-feedback" role="menuitem"><svg class="i"><use href="#i-user"/></svg>View profile</a>
+                <a href="#c-feedback" role="menuitem"><svg class="i"><use href="#i-msg"/></svg>Message</a>
+                <a href="#c-feedback" role="menuitem"><svg class="i"><use href="#i-edit"/></svg>Edit role<kbd>E</kbd></a>
+                <hr>
+                <a href="#c-feedback" role="menuitem" class="danger"><svg class="i"><use href="#i-trash"/></svg>Remove from workspace</a>
+              </div>
+            </div>
+          </div>
+          <div class="modal-stage">
+            <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m1">
+              <div class="modal__head"><span class="ico-badge"><svg class="i"><use href="#i-warn"/></svg></span><h4 id="m1">Delete “Website relaunch”?</h4><button class="btn btn--ghost btn--icon btn--s" aria-label="Close"><svg class="i i--s"><use href="#i-x"/></svg></button></div>
+              <div class="modal__body"><p style="margin:0 0 16px">All 24 tasks and their files will be removed for everyone. Invoices already sent stay in billing history.</p>
+                <div class="field"><label class="field__label" for="m1r">Reason</label><div class="ctl ctl--select"><select id="m1r"><option>The project was cancelled</option><option>It was a duplicate</option><option>Another reason</option></select></div></div>
+              </div>
+              <div class="modal__foot"><button class="btn btn--secondary">Keep project</button><button class="btn btn--danger">Delete</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nav -->
+      <div class="sub" id="c-nav">
+        <h3>Navigation bar</h3>
+        <p>On desktop, a top bar with four sections at most. On phones, navigation moves to a bottom bar, and the top bar keeps the logo, notifications and account.</p>
+        <div class="board" style="padding:0;overflow:hidden">
+          <div class="appbar">
+            <span class="appbar__logo"><svg class="mark" aria-hidden="true"><use href="#mark"/></svg>Product name</span>
+            <nav aria-label="Sections"><a href="#c-nav" aria-current="page">Home</a><a href="#c-nav">Projects</a><a href="#c-nav">Tasks</a><a href="#c-nav">Invoices</a></nav>
+            <div class="appbar__end">
+              <button class="icon-btn" aria-label="Search"><svg class="i"><use href="#i-search"/></svg></button>
+              <button class="icon-btn" aria-label="Notifications, 3 unread"><svg class="i"><use href="#i-bell"/></svg><span class="count tnum">3</span></button>
+              <span class="av av--s">SR</span>
+            </div>
+          </div>
+        </div>
+        <div class="board" style="padding:0;overflow:hidden;max-width:390px;margin-top:16px">
+          <nav class="bottom-nav" aria-label="Sections (mobile)">
+            <a href="#c-nav" aria-current="page"><svg class="i"><use href="#i-home"/></svg>Home</a>
+            <a href="#c-nav"><svg class="i"><use href="#i-folder"/></svg>Projects</a>
+            <a href="#c-nav"><svg class="i"><use href="#i-tasks"/></svg>Tasks</a>
+            <a href="#c-nav"><svg class="i"><use href="#i-file"/></svg>Invoices</a>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ Sample screen ════════ -->
+    <!-- FILL: replace with the project's most-used screen in scope, using its real labels and realistic data -->
+    <section class="sec" id="screen">
+      <h2>Sample screen: dashboard</h2>
+      <p class="lead">The same content and the same components in all three options. Switch the option at the top to compare them on a real screen, then look at the phone version below it.</p>
+      <div class="screen" id="screen-desktop">
+        <div class="appbar">
+          <span class="appbar__logo"><svg class="mark" aria-hidden="true"><use href="#mark"/></svg>Product name</span>
+          <nav aria-label="Sections"><a href="#screen" aria-current="page">Home</a><a href="#screen">Projects</a><a href="#screen">Tasks</a><a href="#screen">Invoices</a></nav>
+          <div class="appbar__end"><button class="icon-btn" aria-label="Search"><svg class="i"><use href="#i-search"/></svg></button><button class="icon-btn" aria-label="Notifications"><svg class="i"><use href="#i-bell"/></svg><span class="count tnum">3</span></button><span class="av av--s">SR</span></div>
+        </div>
+        <div class="screen__in">
+          <div class="phead">
+            <div>
+              <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="#screen"><svg class="i i--s"><use href="#i-home"/></svg><span class="sr">Home</span></a><svg class="i sep flip" aria-hidden="true"><use href="#i-chev"/></svg></li><li><span aria-current="page">Dashboard</span></li></ol></nav>
+              <h1>Good morning, Sam</h1>
+              <p>You have 3 tasks due today and one invoice waiting for approval.</p>
+            </div>
+            <div class="row" style="gap:8px"><a class="btn btn--secondary" href="#screen"><svg class="i"><use href="#i-cal"/></svg>Calendar</a><a class="btn btn--primary" href="#screen"><svg class="i"><use href="#i-plus"/></svg>New task</a></div>
+          </div>
+          <div class="sgrid">
+            <div class="card" style="padding:var(--card-pad)">
+              <div class="tile-h"><h2>Projects</h2><div class="seg" role="tablist" aria-label="Project status"><button role="tab" aria-selected="true">Active <span class="n tnum">2</span></button><button role="tab" aria-selected="false">Planned</button><button role="tab" aria-selected="false">Done</button></div></div>
+              <div class="sgrid__items">
+                <a class="card item" href="#screen" style="box-shadow:none;border:1px solid var(--n100)">
+                  <div class="item__cover"><svg class="i"><use href="#i-folder"/></svg><span class="cat">Marketing</span></div>
+                  <div class="card__body"><h3>Website relaunch</h3><div class="meta"><span><svg class="i"><use href="#i-cal"/></svg>Until 14 Nov</span><span><svg class="i"><use href="#i-users"/></svg>6 members</span></div>
+                    <div class="prog" style="margin-top:14px"><div class="prog__top"><span>18 of 24 tasks</span><b class="tnum">75%</b></div><div class="prog__track"><div class="prog__fill" style="--v:75%"></div></div></div></div>
+                </a>
+                <a class="card item" href="#screen" style="box-shadow:none;border:1px solid var(--n100)">
+                  <div class="item__cover item__cover--alt-2"><svg class="i"><use href="#i-chart"/></svg><span class="cat cat--alt-2">Engineering</span></div>
+                  <div class="card__body"><h3>Billing migration</h3><div class="meta"><span><svg class="i"><use href="#i-cal"/></svg>Until 30 Nov</span><span><svg class="i"><use href="#i-users"/></svg>4 members</span></div>
+                    <div class="prog" style="margin-top:14px"><div class="prog__top"><span>6 of 24 tasks</span><b class="tnum">25%</b></div><div class="prog__track"><div class="prog__fill" style="--v:25%"></div></div></div></div>
+                </a>
+              </div>
+            </div>
+            <div style="display:grid;gap:20px">
+              <div class="card" style="padding:var(--card-pad)">
+                <div class="tile-h"><h2>Upcoming</h2><a class="btn btn--ghost btn--s" href="#screen">All</a></div>
+                <div class="list">
+                  <div class="li"><div class="date-chip"><b>30</b><small>Oct</small></div><div class="li__main"><b>Design review</b><small>9:00 am · Room 3</small></div></div>
+                  <div class="li"><div class="date-chip"><b>2</b><small>Nov</small></div><div class="li__main"><b>Quarterly report</b><small>Due 11:59 pm</small></div><span class="chip chip--dot chip--warn">Not started</span></div>
+                </div>
+              </div>
+              <div class="card" style="padding:var(--card-pad)">
+                <div class="tile-h"><h2>Notifications</h2><span class="count tnum">3</span></div>
+                <div class="list">
+                  <div class="li"><span class="av av--s av--g1">JL</span><div class="li__main"><b>Jordan Lee uploaded the launch brief</b><small>2 hours ago</small></div></div>
+                  <div class="li"><span class="av av--s av--sq av--g3">A</span><div class="li__main"><b>Acme Corp approved invoice INV-1042</b><small>Yesterday</small></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub">
+        <h2>On a phone (390px)</h2>
+        <div class="phone">
+          <div class="phone__screen">
+            <div class="appbar">
+              <span class="appbar__logo"><svg class="mark" aria-hidden="true"><use href="#mark"/></svg>Product name</span>
+              <div class="appbar__end"><button class="icon-btn" aria-label="Search"><svg class="i"><use href="#i-search"/></svg></button><button class="icon-btn" aria-label="Notifications"><svg class="i"><use href="#i-bell"/></svg><span class="count tnum">3</span></button></div>
+            </div>
+            <div class="phone__scroll screen" style="border-radius:0;box-shadow:none">
+              <div class="phead" style="--fs-h3:24px;--lh-h3:34px">
+                <div><h1>Good morning, Sam</h1><p>3 tasks due today · 1 invoice to approve</p></div>
+                <a class="btn btn--primary" href="#screen" style="--bh:48px;width:100%"><svg class="i"><use href="#i-plus"/></svg>New task</a>
+              </div>
+              <div class="sgrid">
+                <div class="card" style="padding:16px">
+                  <div class="tile-h"><h2>Projects</h2><span class="chip chip--l chip--outline tnum">2</span></div>
+                  <div class="sgrid__items" style="grid-template-columns:1fr;margin-top:12px">
+                    <a class="card item" href="#screen" style="box-shadow:none;border:1px solid var(--n100)">
+                      <div class="item__cover" style="height:84px"><svg class="i" style="width:48px;height:48px"><use href="#i-folder"/></svg><span class="cat">Marketing</span></div>
+                      <div class="card__body" style="padding:14px 16px 16px"><h3 style="margin-top:0">Website relaunch</h3><div class="prog"><div class="prog__top"><span>18 of 24 tasks</span><b class="tnum">75%</b></div><div class="prog__track"><div class="prog__fill" style="--v:75%"></div></div></div></div>
+                    </a>
+                  </div>
+                </div>
+                <div class="card" style="padding:16px">
+                  <div class="tile-h"><h2>Upcoming</h2></div>
+                  <div class="list"><div class="li"><div class="date-chip"><b>30</b><small>Oct</small></div><div class="li__main"><b>Design review</b><small>9:00 am · Room 3</small></div></div></div>
+                </div>
+              </div>
+            </div>
+            <nav class="bottom-nav" aria-label="Sections">
+              <a href="#screen" aria-current="page"><svg class="i"><use href="#i-home"/></svg>Home</a>
+              <a href="#screen"><svg class="i"><use href="#i-folder"/></svg>Projects</a>
+              <a href="#screen"><svg class="i"><use href="#i-tasks"/></svg>Tasks</a>
+              <a href="#screen"><svg class="i"><use href="#i-file"/></svg>Invoices</a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ Decide ════════ -->
+    <section class="sec" id="decide">
+      <h2>Open decisions</h2>
+      <!-- FILL: who has to answer these (team, owner, client) and why they cannot be assumed. -->
+      <p class="lead">The first decision is the option. The rest need an answer from the product owner; this page does not assume them.</p>
+      <ol class="qs">
+        <!-- FILL: the option question, with the per-layer mix rule. -->
+        <li><div><b>Which option — or which mix?</b><p>Options can be combined, for example B's shape with C's colour. Pick one source per layer (shape, depth, colour) and never blend two options' values inside the same layer.</p></div></li>
+        <!-- FILL: the font question — which family, whether a web licence exists, and the fallback if it does not. -->
+        <li><div><b>Is there a web licence for the brand font?</b><p>If not, the current fallback stays; both fonts can be compared with the switch at the top. The scale and sizes do not change with the font.</p></div></li>
+        <!-- FILL: the compliance question — which standard, whether the product is in scope, and what is missing to confirm it. -->
+        <li><div><b>Does a compliance standard apply?</b><p>If the product falls under an accessibility or design standard, name it and the version in force; it decides how close to option B the result must be.</p></div></li>
+        <!-- FILL: the base text size question, with the measured current size and where the change will be felt most. -->
+        <li><div><b>Move the body text to 16px?</b><p>Larger body text is easier to read; users will notice the change first in dense tables. Confirm before the scale is applied.</p></div></li>
+        <!-- FILL: the error colour question, with the current value and any standard's value. -->
+        <li><div><b>Which error colour?</b><p>The palette has no error colour, so this page uses #B42318 (6.05:1 on its wash, 6.57:1 for white text on it). Confirm it or supply the brand's own.</p></div></li>
+      </ol>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+  const css = n => getComputedStyle(root).getPropertyValue(n).trim();
+
+  // FILL: one entry per brand colour — [label, token base name]. Values are read from layer 1, never repeated here.
+  const ramps = [['Brand dark', 'brand-dark'], ['Brand deep', 'brand-deep'], ['Brand accent', 'brand-accent'], ['Brand primary', 'brand-primary'], ['Brand muted', 'brand-muted']];
+  const ramps2 = [['Alt 1', 'alt-1'], ['Alt 2', 'alt-2'], ['Alt 3', 'alt-3'], ['Alt 4', 'alt-4'], ['Greys', null, ['gray-a', 'gray-b', 'gray-c']]];
+  const lum = hex => { const c = hex.replace('#', '').match(/../g).map(x => { x = parseInt(x, 16) / 255; return x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4; }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+  const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+  const ink = bg => ratio(bg, '#ffffff') >= 4.5 ? '#fff' : css('--brand-dark');
+  const sw = (hex, label) => `<div class="sw" style="background:${hex};color:${ink(hex)}"><span>${label}</span>${hex.toUpperCase()}</div>`;
+  const name = (label, sub) => `<div class="ramp__name">${label}<small><span dir="ltr">${sub}</span></small></div>`;
+  document.getElementById('ramps').innerHTML = ramps.map(([label, k]) => {
+    const steps = ['8', '20', '40', '60', '80'].map(s => sw(css(`--${k}-${s}`), s + '%')).join('');
+    return `<div class="ramp">${name(label, css(`--${k}`).toUpperCase())}${steps}${sw(css(`--${k}`), '100%')}</div>`;
+  }).join('');
+  document.getElementById('ramps2').innerHTML = ramps2.map(([label, k, list]) => k
+    ? `<div class="ramp">${name(label, css(`--${k}`).toUpperCase())}${['20', '40', '60', '80'].map(s => sw(css(`--${k}-${s}`), s + '%')).join('')}${sw(css(`--${k}`), '100%')}</div>`
+    : `<div class="ramp">${name(label, list.join(' · '))}${list.map(t => sw(css(`--${t}`), t)).join('')}</div>`).join('');
+
+  const scale = [
+    ['Display', 'Page title', '--fs-d', '--lh-d', 700, 'Projects overview'],
+    ['H2', 'Section heading', '--fs-h2', '--lh-h2', 700, 'Upcoming tasks'],
+    ['H3', 'Inner page title', '--fs-h3', '--lh-h3', 700, 'Website relaunch'],
+    ['H4', 'Group heading', '--fs-h4', '--lh-h4', 700, 'Billing details'],
+    ['H5', 'Card title', '--fs-h5', '--lh-h5', 700, 'Notifications'],
+    ['Large', 'Intro and lead text', '--fs-lg', '--lh-lg', 400, 'Six weeks of work across three teams.'],
+    ['Body', 'Text and fields', '--fs-md', '--lh-md', 400, 'Every invoice is sent as a PDF and a link.'],
+    ['Small', 'Labels, tables, buttons', '--fs-sm', '--lh-sm', 500, 'Start date · 3 Nov 2026'],
+    ['Fine', 'Help and secondary data', '--fs-xs', '--lh-xs', 400, 'Shown on invoices and receipts.']
+  ];
+  const typeEl = document.getElementById('typescale');
+  const drawType = () => {
+    const mobile = matchMedia('(max-width: 767.98px)').matches;
+    typeEl.innerHTML = scale.map(([n, use, fs, lh, w, s]) => `<div class="type-row"><div class="t-meta"><b>${n}</b>${use}</div><p class="t-sample" style="font-size:var(${fs});line-height:var(${lh});font-weight:${w}">${s}</p><div class="t-px"><span dir="ltr">${css(fs)} / ${css(lh)} · ${w}</span>${mobile ? '<br>mobile' : ''}</div></div>`).join('');
+  };
+  const sp = [['--s1', 4], ['--s2', 8], ['--s3', 12], ['--s4', 16], ['--s5', 20], ['--s6', 24], ['--s8', 32], ['--s10', 40], ['--s12', 48], ['--s16', 64], ['--s20', 80]];
+  document.getElementById('spacing').innerHTML = '<span class="cap">Spacing scale</span>' + sp.map(([t, v]) => `<div class="space-row"><code>${t}</code><span class="tnum" dir="ltr">${v}px</span><div class="bar" style="width:${v * 2.4}px;max-width:100%"></div></div>`).join('');
+  // FILL: the project's breakpoints — [label, from, to, caption].
+  const bps = [['Phone', 0, 576, '< 576'], ['sm', 576, 768, '576'], ['md · tablet', 768, 992, '768'], ['lg', 992, 1200, '992'], ['xl · desktop', 1200, 1400, '1200'], ['xxl', 1400, 1600, '1400']];
+  const drawBp = () => {
+    const w = innerWidth;
+    document.getElementById('bps').innerHTML = bps.map(([n, a, b, l]) => `<div class="bp__row${w >= a && w < b ? ' is-now' : ''}"><span>${n}</span><div class="bp__track"><div class="bp__fill" style="width:${Math.max(18, b / 16)}%"><span dir="ltr">${l}${w >= a && w < b ? ' · you are here' : ''}</span></div></div></div>`).join('');
+  };
+  const icons = [['search', 'Search'], ['home', 'Home'], ['bell', 'Notification'], ['cal', 'Calendar'], ['folder', 'Project'], ['tasks', 'Task'], ['file', 'Invoice'], ['book', 'Docs'], ['user', 'User'], ['users', 'Team'], ['chart', 'Report'], ['clock', 'Time'], ['pin', 'Location'], ['msg', 'Message'], ['edit', 'Edit'], ['trash', 'Delete'], ['upload', 'Upload'], ['down', 'Download'], ['filter', 'Filter'], ['sort', 'Sort'], ['more', 'More'], ['info', 'Info'], ['ok', 'Success'], ['warn', 'Warning'], ['err', 'Error'], ['chev', 'Next ⇋'], ['logout', 'Sign out']];
+  document.getElementById('iconset').innerHTML = icons.map(([k, n]) => `<figure><svg class="i${k === 'chev' ? ' flip' : ''}"><use href="#i-${k}"/></svg><figcaption>${n}</figcaption></figure>`).join('');
+
+  const roles = [['Page ground', '--ground'], ['Card surface', '--surface'], ['Sunken surface', '--sunken'], ['Text', '--ink'], ['Secondary text', '--ink-2'], ['Muted text', '--ink-3'], ['Borders', '--line'], ['Field border', '--line-input'], ['Primary action', '--primary'], ['Primary action — hover', '--primary-hover'], ['Text on primary action', '--on-primary'], ['Selection', '--select-wash'], ['Link', '--link'], ['Focus ring', '--focus']];
+  const drawRoles = () => {
+    document.querySelector('#roles tbody').innerHTML = roles.map(([n, t]) => { const v = css(t); return `<tr><th scope="row">${n}</th><td><span style="display:inline-block;width:56px;height:24px;border-radius:6px;background:var(${t});box-shadow:inset 0 0 0 1px rgba(31,36,48,.12)"></span></td><td><code>${t}</code></td><td><code>${v}</code></td></tr>`; }).join('');
+    document.querySelectorAll('[data-tok]').forEach(el => { el.textContent = css(el.dataset.tok); });
+  };
+
+  const setOpt = o => {
+    root.dataset.opt = o; store.set('ds-opt', o);
+    document.querySelectorAll('[data-set-opt]').forEach(b => { const on = b.dataset.setOpt === o; b.setAttribute(b.classList.contains('opt') ? 'aria-pressed' : 'aria-selected', on); });
+    document.querySelectorAll('#cmp [data-col]').forEach(c => c.classList.toggle('on', c.dataset.col === o));
+    drawRoles();
+  };
+  const setFont = f => {
+    root.dataset.font = f; store.set('ds-font', f);
+    document.querySelectorAll('[data-set-font]').forEach(b => b.setAttribute('aria-selected', b.dataset.setFont === f));
+  };
+  document.addEventListener('click', e => {
+    const o = e.target.closest('[data-set-opt]'); if (o) setOpt(o.dataset.setOpt);
+    const f = e.target.closest('[data-set-font]'); if (f) setFont(f.dataset.setFont);
+    const t = e.target.closest('.seg:not(#opt-seg):not(#font-seg) [role="tab"], .tabs [role="tab"]');
+    if (t) t.parentElement.querySelectorAll('[role="tab"]').forEach(x => x.setAttribute('aria-selected', x === t));
+    const fc = e.target.closest('.filter-chip'); if (fc) fc.setAttribute('aria-pressed', fc.getAttribute('aria-pressed') !== 'true');
+    if (e.target.closest('a[href^="#c-"], a[href="#screen"]')) e.preventDefault();
+  });
+  document.getElementById('indet').indeterminate = true;
+  const qs = new URLSearchParams(location.search), qo = qs.get('o'), only = qs.get('only');
+  if (only) document.querySelectorAll('main > .sec, #components > .sub').forEach(el => {
+    el.hidden = !(el.id === only || el.contains(document.getElementById(only)) || (el.id === 'components' && document.getElementById(only)?.closest('#components')));
+  });
+  const so = store.get('ds-opt'), sf = store.get('ds-font');
+  setOpt(['a', 'b', 'c'].includes(qo) ? qo : (['a', 'b', 'c'].includes(so) ? so : 'a'));
+  setFont(['primary', 'alt'].includes(sf) ? sf : 'primary');
+  drawType(); drawBp();
+  addEventListener('resize', () => { drawType(); drawBp(); });
+})();
+</script>
+</body>
+</html>
